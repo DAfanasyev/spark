@@ -45,6 +45,7 @@ public class InterceptorsRegistry {
             for (String includedPath : ir.includedPathes) {
                 if (matches(includedPath, path)) {
                     routeMatches.add(new RouteMatch(httpMethod, ir.handler, includedPath, path, acceptType));
+                    break;
                 }
             }
         }
