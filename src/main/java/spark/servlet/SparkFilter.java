@@ -39,6 +39,7 @@ import spark.resource.ClassPathResource;
 import spark.resource.ClassPathResourceHandler;
 import spark.resource.ExternalResource;
 import spark.resource.ExternalResourceHandler;
+import spark.interceptor.InterceptorsRegistry;
 import spark.route.RouteMatcherFactory;
 import spark.utils.IOUtils;
 import spark.webserver.MatcherFilter;
@@ -71,7 +72,7 @@ public class SparkFilter implements Filter {
         application.init();
 
         filterPath = FilterTools.getFilterPath(filterConfig);
-        matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), true, false);
+        matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), InterceptorsRegistry.get(), true, false);
     }
 
     /**

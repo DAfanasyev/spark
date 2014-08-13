@@ -162,7 +162,7 @@ public class MimeParse {
      * @param header    the header
      * @return the best match
      */
-    public static String bestMatch(Collection<String> supported, String header) {
+    public static String mimeBestMatch(Collection<String> supported, String header) {
         List<ParseResults> parseResults = new LinkedList<ParseResults>();
         List<FitnessAndQuality> weightedMatches = new LinkedList<FitnessAndQuality>();
         for (String r : header.split(",")) {

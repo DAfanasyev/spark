@@ -14,22 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.examples.filter;
+package spark.examples.interceptor;
 
 import static spark.Spark.after;
 import static spark.Spark.get;
-
-import spark.Filter;
-import spark.Request;
-import spark.Response;
-import spark.Route;
 
 /**
  * Example showing the use of attributes
  *
  * @author Per Wendel
  */
-public class FilterExampleAttributes {
+public class InterceptorExampleAttributes {
 
     public static void main(String[] args) {
         get("/hi", (request, response) -> {

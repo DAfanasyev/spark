@@ -28,18 +28,16 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import spark.Access;
-import spark.FilterImpl;
-import spark.HaltException;
-import spark.Request;
-import spark.RequestResponseFactory;
-import spark.Response;
-import spark.RouteImpl;
+import spark.*;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
+import spark.interceptor.Interceptor;
 import spark.route.HttpMethod;
+import spark.interceptor.InterceptorsRegistry;
 import spark.route.RouteMatch;
 import spark.route.SimpleRouteMatcher;
+
+import static spark.interceptor.InterceptorRegistration.InterceptionPhase;
 
 /**
  * Filter for matching of filters and routes.
@@ -51,6 +49,7 @@ public class MatcherFilter implements Filter {
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
 
     private SimpleRouteMatcher routeMatcher;
+    private InterceptorsRegistry interceptorsRegistry;
     private boolean isServletContext;
     private boolean hasOtherHandlers;
 
@@ -66,8 +65,10 @@ public class MatcherFilter implements Filter {
      * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
      * @param hasOtherHandlers If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
-    public MatcherFilter(SimpleRouteMatcher routeMatcher, boolean isServletContext, boolean hasOtherHandlers) {
+    public MatcherFilter(SimpleRouteMatcher routeMatcher, InterceptorsRegistry interceptorsRegistry,
+                         boolean isServletContext, boolean hasOtherHandlers) {
         this.routeMatcher = routeMatcher;
+        this.interceptorsRegistry = interceptorsRegistry;
         this.isServletContext = isServletContext;
         this.hasOtherHandlers = hasOtherHandlers;
     }
@@ -82,6 +83,7 @@ public class MatcherFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
         String httpMethodStr = httpRequest.getMethod().toLowerCase(); // NOSONAR
+        HttpMethod httpMethod = HttpMethod.valueOf(httpMethodStr);
         String uri = httpRequest.getRequestURI(); // NOSONAR
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
@@ -93,20 +95,20 @@ public class MatcherFilter implements Filter {
         LOG.debug("httpMethod:" + httpMethodStr + ", uri: " + uri);
         try {
             // BEFORE filters
-            List<RouteMatch> matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.before, uri, acceptType);
+            List<RouteMatch> matchSet = interceptorsRegistry.findInterceptors(InterceptionPhase.before, httpMethod, uri, acceptType);
 
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
-                if (filterTarget instanceof FilterImpl) {
+                if (filterTarget instanceof Interceptor) {
                     Request request = RequestResponseFactory.create(filterMatch, httpRequest);
                     Response response = RequestResponseFactory.create(httpResponse);
 
-                    FilterImpl filter = (FilterImpl) filterTarget;
+                    Interceptor interceptor = (Interceptor) filterTarget;
 
                     req.setDelegate(request);
                     res.setDelegate(response);
 
-                    filter.handle(req, res);
+                    interceptor.handle(req, res);
 
                     String bodyAfterFilter = Access.getBody(response);
                     if (bodyAfterFilter != null) {
@@ -115,8 +117,6 @@ public class MatcherFilter implements Filter {
                 }
             }
             // BEFORE filters, END
-
-            HttpMethod httpMethod = HttpMethod.valueOf(httpMethodStr);
 
             RouteMatch match = null;
             match = routeMatcher.findTargetForRequestedRoute(httpMethod, uri, acceptType);
@@ -155,19 +155,19 @@ public class MatcherFilter implements Filter {
             }
 
             // AFTER filters
-            matchSet = routeMatcher.findTargetsForRequestedRoute(HttpMethod.after, uri, acceptType);
+            matchSet = interceptorsRegistry.findInterceptors(InterceptionPhase.after, httpMethod, uri, acceptType);
 
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
-                if (filterTarget instanceof FilterImpl) {
+                if (filterTarget instanceof Interceptor) {
                     Request request = RequestResponseFactory.create(filterMatch, httpRequest);
                     Response response = RequestResponseFactory.create(httpResponse);
 
                     req.setDelegate(request);
                     res.setDelegate(response);
 
-                    FilterImpl filter = (FilterImpl) filterTarget;
-                    filter.handle(req, res);
+                    Interceptor interceptor = (Interceptor) filterTarget;
+                    interceptor.handle(req, res);
 
                     String bodyAfterFilter = Access.getBody(response);
                     if (bodyAfterFilter != null) {

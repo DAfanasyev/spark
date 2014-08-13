@@ -102,7 +102,7 @@ public class SimpleRouteMatcher {
 
         for (RouteEntry routeEntry : routeEntries) {
             if (acceptType != null) {
-                String bestMatch = MimeParse.bestMatch(Arrays.asList(routeEntry.acceptedType), acceptType);
+                String bestMatch = MimeParse.mimeBestMatch(Arrays.asList(routeEntry.acceptedType), acceptType);
 
                 if (routeWithGivenAcceptType(bestMatch)) {
                     matchSet.add(new RouteMatch(httpMethod, routeEntry.target, routeEntry.path, path, acceptType));
@@ -168,7 +168,7 @@ public class SimpleRouteMatcher {
     private RouteEntry findTargetWithGivenAcceptType(List<RouteEntry> routeMatches, String acceptType) {
         if (acceptType != null && routeMatches.size() > 0) {
             Map<String, RouteEntry> acceptedMimeTypes = getAcceptedMimeTypes(routeMatches);
-            String bestMatch = MimeParse.bestMatch(acceptedMimeTypes.keySet(), acceptType);
+            String bestMatch = MimeParse.mimeBestMatch(acceptedMimeTypes.keySet(), acceptType);
 
             if (routeWithGivenAcceptType(bestMatch)) {
                 return acceptedMimeTypes.get(bestMatch);

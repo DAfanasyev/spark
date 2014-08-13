@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.examples.filter;
+package spark.examples.interceptor;
 
 import static spark.Spark.before;
 import static spark.Spark.*;
 
 
-public class FilterExampleWildcard {
+public class InterceptorExampleWildcard {
 
     public static void main(String[] args) {
         before("/protected/*", (request, response) -> {

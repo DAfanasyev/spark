@@ -15,14 +15,6 @@ public class LambdaTest {
             return "Hello World";
         });
 
-        before("/protected/*", "application/xml", (request, response) -> {
-            halt(401, "<xml>fuck off</xml>");
-        });
-
-        before("/protected/*", "application/json", (request, response) -> {
-            halt(401, "{\"message\": \"Go Away!\"}");
-        });
-
     }
 
 }

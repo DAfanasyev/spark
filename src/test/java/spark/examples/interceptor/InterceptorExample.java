@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package spark.examples.filter;
+package spark.examples.interceptor;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import spark.Filter;
+import spark.interceptor.Interceptor;
 import spark.Request;
 import spark.Response;
 
@@ -42,7 +42,7 @@ import static spark.Spark.halt;
  *
  * @author Per Wendel
  */
-public class FilterExample {
+public class InterceptorExample {
 
     private static Map<String, String> usernamePasswords = new HashMap<String, String>();
 
@@ -51,7 +51,7 @@ public class FilterExample {
         usernamePasswords.put("foo", "bar");
         usernamePasswords.put("admin", "admin");
 
-        before(new Filter() {
+        before(new Interceptor() {
             @Override
             public void handle(Request request, Response response) {
                 String user = request.queryParams("user");

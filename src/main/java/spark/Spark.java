@@ -18,6 +18,8 @@ package spark;
 
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
+import spark.interceptor.Interceptor;
+import spark.interceptor.InterceptorRegistration;
 import spark.route.HttpMethod;
 import spark.utils.SparkUtils;
 
@@ -133,23 +135,63 @@ public final class Spark extends SparkBase {
     }
 
     /**
-     * Maps a filter to be executed before any matching routes
+     * Maps an interceptor to be executed before any matching routes
      *
-     * @param path   the path
-     * @param filter The filter
+     * @param path        the path
+     * @param interceptor The interceptor
+     * @return object for detailed interceptor configuration
      */
-    public static synchronized void before(String path, Filter filter) {
-        addFilter(HttpMethod.before.name(), wrap(path, filter));
+    public static synchronized InterceptorRegistration before(String path, Interceptor interceptor) {
+        return addInterceptor(new InterceptorRegistration().before(path).execute(interceptor));
     }
 
     /**
-     * Maps a filter to be executed after any matching routes
+     * Maps an interceptor to be executed after any matching routes
      *
-     * @param path   the path
-     * @param filter The filter
+     * @param path        the path
+     * @param interceptor The filter
+     * @return object for detailed interceptor configuration
      */
-    public static synchronized void after(String path, Filter filter) {
-        addFilter(HttpMethod.after.name(), wrap(path, filter));
+    public static synchronized InterceptorRegistration after(String path, Interceptor interceptor) {
+        return addInterceptor(new InterceptorRegistration().after(path).execute(interceptor));
+    }
+
+    /**
+     * Creates object to configure interceptor to be executed before any matching route
+     *
+     * @return object for detailed interceptor configuration
+     */
+    public static synchronized InterceptorRegistration before() {
+        return addInterceptor(new InterceptorRegistration().before());
+    }
+
+    /**
+     * Creates object to configure interceptor to be executed before any matching route
+     *
+     * @param pathes the pathes
+     * @return object for detailed interceptor configuration
+     */
+    public static synchronized InterceptorRegistration before(String... pathes) {
+        return addInterceptor(new InterceptorRegistration().before(pathes));
+    }
+
+    /**
+     * Creates object to configure interceptor to be executed after any matching route
+     *
+     * @return object for detailed interceptor configuration
+     */
+    public static synchronized InterceptorRegistration after() {
+        return addInterceptor(new InterceptorRegistration().after());
+    }
+
+    /**
+     * Creates object to configure interceptor to be executed after any matching route
+     *
+     * @param pathes the pathes
+     * @return object for detailed interceptor configuration
+     */
+    public static synchronized InterceptorRegistration after(String... pathes) {
+        return addInterceptor(new InterceptorRegistration().after(pathes));
     }
 
     //////////////////////////////////////////////////
@@ -257,43 +299,49 @@ public final class Spark extends SparkBase {
 
 
     /**
-     * Maps a filter to be executed before any matching routes
+     * Maps a interceptor to be executed before any matching routes
      *
-     * @param filter The filter
+     * @param interceptor The interceptor
      */
-    public static synchronized void before(Filter filter) {
-        addFilter(HttpMethod.before.name(), wrap(SparkUtils.ALL_PATHS, filter));
+    public static synchronized InterceptorRegistration before(Interceptor interceptor) {
+        return addInterceptor(new InterceptorRegistration().before(SparkUtils.ALL_PATHS).execute(interceptor));
+    }
+
+    /**
+     * Maps a interceptor to be executed after any matching routes
+     *
+     * @param interceptor The interceptor
+     */
+    public static synchronized InterceptorRegistration after(Interceptor interceptor) {
+        return addInterceptor(new InterceptorRegistration().after(SparkUtils.ALL_PATHS).execute(interceptor));
+    }
+
+    /**
+     * Maps an interceptor to be executed before any matching routes
+     *
+     * @param path        the path
+     * @param acceptType  the accept type
+     * @param interceptor The interceptor
+     */
+    public static synchronized InterceptorRegistration before(String path, String acceptType, Interceptor interceptor) {
+        return addInterceptor(
+                new InterceptorRegistration()
+                        .before(path).accepting(acceptType).execute(interceptor)
+        );
     }
 
     /**
      * Maps a filter to be executed after any matching routes
      *
-     * @param filter The filter
+     * @param path        the path
+     * @param acceptType  the accept type
+     * @param interceptor The filter
      */
-    public static synchronized void after(Filter filter) {
-        addFilter(HttpMethod.after.name(), wrap(SparkUtils.ALL_PATHS, filter));
-    }
-
-    /**
-     * Maps a filter to be executed before any matching routes
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param filter     The filter
-     */
-    public static synchronized void before(String path, String acceptType, Filter filter) {
-        addFilter(HttpMethod.before.name(), wrap(path, acceptType, filter));
-    }
-
-    /**
-     * Maps a filter to be executed after any matching routes
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param filter     The filter
-     */
-    public static synchronized void after(String path, String acceptType, Filter filter) {
-        addFilter(HttpMethod.after.name(), wrap(path, acceptType, filter));
+    public static synchronized InterceptorRegistration after(String path, String acceptType, Interceptor interceptor) {
+        return addInterceptor(
+                new InterceptorRegistration()
+                        .after(path).accepting(acceptType).execute(interceptor)
+        );
     }
 
     //////////////////////////////////////////////////

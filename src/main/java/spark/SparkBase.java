@@ -3,6 +3,8 @@ package spark;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import spark.interceptor.InterceptorRegistration;
+import spark.interceptor.InterceptorsRegistry;
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
 import spark.servlet.SparkFilter;
@@ -32,6 +34,7 @@ public abstract class SparkBase {
 
     protected static SparkServer server;
     protected static SimpleRouteMatcher routeMatcher;
+    protected static InterceptorsRegistry interceptorsRegistry;
     private static boolean runFromServlet;
 
     private static boolean servletStaticLocationSet;
@@ -267,53 +270,22 @@ public abstract class SparkBase {
         return impl;
     }
 
-    /**
-     * Wraps the filter in FilterImpl
-     *
-     * @param path   the path
-     * @param filter the filter
-     * @return the wrapped route
-     */
-    protected static FilterImpl wrap(final String path, final Filter filter) {
-        return wrap(path, DEFAULT_ACCEPT_TYPE, filter);
-    }
-
-    /**
-     * Wraps the filter in FilterImpl
-     *
-     * @param path       the path
-     * @param acceptType the accept type
-     * @param filter     the filter
-     * @return the wrapped route
-     */
-    protected static FilterImpl wrap(final String path, String acceptType, final Filter filter) {
-        if (acceptType == null) {
-            acceptType = DEFAULT_ACCEPT_TYPE;
-        }
-        FilterImpl impl = new FilterImpl(path, acceptType) {
-            @Override
-            public void handle(Request request, Response response) throws Exception {
-                filter.handle(request, response);
-            }
-        };
-        return impl;
-    }
-
     protected static void addRoute(String httpMethod, RouteImpl route) {
         init();
         routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
                                                    + "'", route.getAcceptType(), route);
     }
 
-    protected static void addFilter(String httpMethod, FilterImpl filter) {
+    protected static InterceptorRegistration addInterceptor(InterceptorRegistration registration) {
         init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + filter.getPath()
-                                                   + "'", filter.getAcceptType(), filter);
+        interceptorsRegistry.addInterceptorRegistration(registration);
+        return registration;
     }
 
     private static synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
+            interceptorsRegistry = InterceptorsRegistry.get();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
