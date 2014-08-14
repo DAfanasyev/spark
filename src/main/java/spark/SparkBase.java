@@ -13,6 +13,9 @@ import spark.servlet.SparkFilter;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Spark base class
  */
@@ -31,8 +34,8 @@ public abstract class SparkBase {
     protected static String truststoreFile;
     protected static String truststorePassword;
 
-    protected static String staticFileFolder = null;
-    protected static String externalStaticFileFolder = null;
+    protected static final Set<String> staticFileFolder = new HashSet<>();
+    protected static final Set<String> externalStaticFileFolder = new HashSet<>();
 
     protected static SparkServer server;
 
@@ -181,14 +184,9 @@ public abstract class SparkBase {
         if (initialized && !runFromServlet) {
             throwBeforeRouteMappingException();
         }
-        staticFileFolder = folder;
-        if (!servletStaticLocationSet) {
-            if (runFromServlet) {
-                SparkFilter.configureStaticResources(staticFileFolder);
-                servletStaticLocationSet = true;
-            }
-        } else {
-            LOG.warn("Static file location has already been set");
+        staticFileFolder.add(folder);
+        if (runFromServlet) {
+            SparkFilter.configureStaticResources(folder);
         }
     }
 
@@ -202,14 +200,9 @@ public abstract class SparkBase {
         if (initialized && !runFromServlet) {
             throwBeforeRouteMappingException();
         }
-        externalStaticFileFolder = externalFolder;
-        if (!servletExternalStaticLocationSet) {
-            if (runFromServlet) {
-                SparkFilter.configureExternalStaticResources(externalStaticFileFolder);
-                servletExternalStaticLocationSet = true;
-            }
-        } else {
-            LOG.warn("External static file location has already been set");
+        externalStaticFileFolder.add(externalFolder);
+        if (runFromServlet) {
+            SparkFilter.configureExternalStaticResources(externalFolder);
         }
     }
 

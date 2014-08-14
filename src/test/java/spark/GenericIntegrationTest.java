@@ -52,6 +52,7 @@ public class GenericIntegrationTest {
         writer.close();
 
         staticFileLocation("/public");
+        staticFileLocation("/client");
         externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
 
         before("/secretcontent/*", (request, response) -> {
@@ -342,10 +343,17 @@ public class GenericIntegrationTest {
     }
 
     @Test
-    public void testStaticFile() throws Exception {
+    public void testStaticFileFromFirstDirectory() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", "/css/style.css", null);
         Assert.assertEquals(200, response.status);
         Assert.assertEquals("Content of css file", response.body);
+    }
+
+    @Test
+    public void testStaticFileFromSecondDirectory() throws Exception {
+        UrlResponse response = testUtil.doMethod("GET", "/js/js.js", null);
+        Assert.assertEquals(200, response.status);
+        Assert.assertEquals("Content of javascript file", response.body);
     }
 
     @Test

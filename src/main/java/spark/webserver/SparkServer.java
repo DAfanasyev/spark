@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.server.Connector;
@@ -30,7 +31,10 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Spark server implementation
@@ -38,6 +42,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
  * @author Per Wendel
  */
 public class SparkServer {
+    private static final Logger log = LoggerFactory.getLogger(SparkServer.class);
 
     private static final int SPARK_DEFAULT_PORT = 4567;
     private static final String NAME = "Spark";
@@ -64,8 +69,8 @@ public class SparkServer {
      */
     public void ignite(String host, int port, String keystoreFile,
                        String keystorePassword, String truststoreFile,
-                       String truststorePassword, String staticFilesFolder,
-                       String externalFilesFolder) {
+                       String truststorePassword, Set<String> staticFilesFolder,
+                       Set<String> externalFilesFolder) {
 
         if (port == 0) {
             try (ServerSocket s = new ServerSocket(0)) {
@@ -99,18 +104,18 @@ public class SparkServer {
         if (staticFilesFolder == null && externalFilesFolder == null) {
             server.setHandler(handler);
         } else {
-            List<Handler> handlersInList = new ArrayList<Handler>();
-            handlersInList.add(handler);
+            List<Handler> handlers = new ArrayList<>();
+            handlers.add(handler);
 
             // Set static file location
-            setStaticFileLocationIfPresent(staticFilesFolder, handlersInList);
+            setStaticFileLocationIfPresent(staticFilesFolder, handlers);
 
             // Set external static file location
-            setExternalStaticFileLocationIfPresent(externalFilesFolder, handlersInList);
+            setExternalStaticFileLocationIfPresent(externalFilesFolder, handlers);
 
-            HandlerList handlers = new HandlerList();
-            handlers.setHandlers(handlersInList.toArray(new Handler[handlersInList.size()]));
-            server.setHandler(handlers);
+            HandlerList handlersList = new HandlerList();
+            handlersList.setHandlers(handlers.toArray(new Handler[handlers.size()]));
+            server.setHandler(handlersList);
         }
 
         try {
@@ -179,33 +184,37 @@ public class SparkServer {
     /**
      * Sets static file location if present
      */
-    private static void setStaticFileLocationIfPresent(String staticFilesRoute, List<Handler> handlersInList) {
-        if (staticFilesRoute != null) {
-            ResourceHandler resourceHandler = new ResourceHandler();
-            Resource staticResources = Resource.newClassPathResource(staticFilesRoute);
-            resourceHandler.setBaseResource(staticResources);
-            resourceHandler.setWelcomeFiles(new String[] {"index.html"});
-            handlersInList.add(resourceHandler);
+    private static void setStaticFileLocationIfPresent(Set<String> staticFilesRoutes, List<Handler> handlersInList) {
+        if (staticFilesRoutes.isEmpty()) return;
+        List<Resource> resources = new ArrayList<>(staticFilesRoutes.size());
+        for (String staticFilesRoute : staticFilesRoutes) {
+            resources.add(Resource.newClassPathResource(staticFilesRoute));
         }
+        ResourceHandler resourceHandler = new ResourceHandler();
+        ResourceCollection resourceCollection = new ResourceCollection(resources.toArray(new Resource[resources.size()]));
+        resourceHandler.setBaseResource(resourceCollection);
+        resourceHandler.setWelcomeFiles(new String[] {"index.html"});
+        handlersInList.add(resourceHandler);
     }
 
     /**
      * Sets external static file location if present
      */
-    private static void setExternalStaticFileLocationIfPresent(String externalFilesRoute,
-                                                               List<Handler> handlersInList) {
-        if (externalFilesRoute != null) {
+    private static void setExternalStaticFileLocationIfPresent(Set<String> externalFilesRoutes, List<Handler> handlersInList) {
+        if (externalFilesRoutes.isEmpty()) return;
+        List<Resource> resources = new ArrayList<>(externalFilesRoutes.size());
+        for (String externalFilesRoute : externalFilesRoutes) {
             try {
-                ResourceHandler externalResourceHandler = new ResourceHandler();
-                Resource externalStaticResources = Resource.newResource(new File(externalFilesRoute));
-                externalResourceHandler.setBaseResource(externalStaticResources);
-                externalResourceHandler.setWelcomeFiles(new String[] {"index.html"});
-                handlersInList.add(externalResourceHandler);
-            } catch (IOException exception) {
-                exception.printStackTrace(); // NOSONAR
-                System.err.println("Error during initialize external resource " + externalFilesRoute); // NOSONAR
+                resources.add(Resource.newResource(new File(externalFilesRoute)));
+            } catch (IOException e) {
+                log.error("Error during initialize external resource {}", externalFilesRoute, e);
             }
         }
+        ResourceHandler externalResourceHandler = new ResourceHandler();
+        ResourceCollection resourceCollection = new ResourceCollection(resources.toArray(new Resource[resources.size()]));
+        externalResourceHandler.setBaseResource(resourceCollection);
+        externalResourceHandler.setWelcomeFiles(new String[]{"index.html"});
+        handlersInList.add(externalResourceHandler);
     }
 
 }

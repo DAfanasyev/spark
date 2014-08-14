@@ -160,6 +160,15 @@ public final class Spark extends SparkBase {
      *
      * @return object for detailed interceptor configuration
      */
+    public static synchronized InterceptorRegistration beforeAll() {
+        return addInterceptor(new InterceptorRegistration().before());
+    }
+
+    /**
+     * Creates object to configure interceptor to be executed before any matching route
+     *
+     * @return object for detailed interceptor configuration
+     */
     public static synchronized InterceptorRegistration before() {
         return addInterceptor(new InterceptorRegistration().before());
     }
@@ -172,6 +181,15 @@ public final class Spark extends SparkBase {
      */
     public static synchronized InterceptorRegistration before(String... pathes) {
         return addInterceptor(new InterceptorRegistration().before(pathes));
+    }
+
+    /**
+     * Creates object to configure interceptor to be executed after any matching route
+     *
+     * @return object for detailed interceptor configuration
+     */
+    public static synchronized InterceptorRegistration afterAll() {
+        return addInterceptor(new InterceptorRegistration().after());
     }
 
     /**
