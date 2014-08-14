@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import spark.interceptor.InterceptorRegistration;
-import spark.interceptor.InterceptorsRegistry;
+import spark.interceptor.InterceptorRegistry;
 import spark.route.RouteMatcherFactory;
 import spark.route.SimpleRouteMatcher;
 import spark.servlet.SparkFilter;
@@ -34,7 +34,7 @@ public abstract class SparkBase {
 
     protected static SparkServer server;
     protected static SimpleRouteMatcher routeMatcher;
-    protected static InterceptorsRegistry interceptorsRegistry;
+    protected static InterceptorRegistry interceptorRegistry;
     private static boolean runFromServlet;
 
     private static boolean servletStaticLocationSet;
@@ -278,14 +278,14 @@ public abstract class SparkBase {
 
     protected static InterceptorRegistration addInterceptor(InterceptorRegistration registration) {
         init();
-        interceptorsRegistry.addInterceptorRegistration(registration);
+        interceptorRegistry.addInterceptor(registration);
         return registration;
     }
 
     private static synchronized void init() {
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
-            interceptorsRegistry = InterceptorsRegistry.get();
+            interceptorRegistry = InterceptorRegistry.get();
             new Thread(new Runnable() {
                 @Override
                 public void run() {

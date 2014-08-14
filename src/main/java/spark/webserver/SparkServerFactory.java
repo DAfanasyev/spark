@@ -16,7 +16,7 @@
  */
 package spark.webserver;
 
-import spark.interceptor.InterceptorsRegistry;
+import spark.interceptor.InterceptorRegistry;
 import spark.route.RouteMatcherFactory;
 
 /**
@@ -28,7 +28,7 @@ public final class SparkServerFactory {
     }
 
     public static SparkServer create(boolean hasMultipleHandler) {
-        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), InterceptorsRegistry.get(),
+        MatcherFilter matcherFilter = new MatcherFilter(RouteMatcherFactory.get(), InterceptorRegistry.get(),
                 false, hasMultipleHandler);
         matcherFilter.init(null);
         JettyHandler handler = new JettyHandler(matcherFilter);

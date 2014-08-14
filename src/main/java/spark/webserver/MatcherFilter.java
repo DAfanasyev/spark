@@ -16,8 +16,19 @@
  */
 package spark.webserver;
 
-import java.io.IOException;
-import java.util.List;
+import spark.Access;
+import spark.HaltException;
+import spark.Request;
+import spark.RequestResponseFactory;
+import spark.Response;
+import spark.RouteImpl;
+import spark.exception.ExceptionHandlerImpl;
+import spark.exception.ExceptionMapper;
+import spark.interceptor.Interceptor;
+import spark.interceptor.InterceptorRegistry;
+import spark.route.HttpMethod;
+import spark.route.RouteMatch;
+import spark.route.SimpleRouteMatcher;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -28,14 +39,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import spark.*;
-import spark.exception.ExceptionHandlerImpl;
-import spark.exception.ExceptionMapper;
-import spark.interceptor.Interceptor;
-import spark.route.HttpMethod;
-import spark.interceptor.InterceptorsRegistry;
-import spark.route.RouteMatch;
-import spark.route.SimpleRouteMatcher;
+import java.io.IOException;
+import java.util.List;
 
 import static spark.interceptor.InterceptorRegistration.InterceptionPhase;
 
@@ -49,7 +54,7 @@ public class MatcherFilter implements Filter {
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
 
     private SimpleRouteMatcher routeMatcher;
-    private InterceptorsRegistry interceptorsRegistry;
+    private InterceptorRegistry interceptorRegistry;
     private boolean isServletContext;
     private boolean hasOtherHandlers;
 
@@ -65,10 +70,10 @@ public class MatcherFilter implements Filter {
      * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
      * @param hasOtherHandlers If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
-    public MatcherFilter(SimpleRouteMatcher routeMatcher, InterceptorsRegistry interceptorsRegistry,
+    public MatcherFilter(SimpleRouteMatcher routeMatcher, InterceptorRegistry interceptorRegistry,
                          boolean isServletContext, boolean hasOtherHandlers) {
         this.routeMatcher = routeMatcher;
-        this.interceptorsRegistry = interceptorsRegistry;
+        this.interceptorRegistry = interceptorRegistry;
         this.isServletContext = isServletContext;
         this.hasOtherHandlers = hasOtherHandlers;
     }
@@ -95,7 +100,7 @@ public class MatcherFilter implements Filter {
         LOG.debug("httpMethod:" + httpMethodStr + ", uri: " + uri);
         try {
             // BEFORE filters
-            List<RouteMatch> matchSet = interceptorsRegistry.findInterceptors(InterceptionPhase.before, httpMethod, uri, acceptType);
+            List<RouteMatch> matchSet = interceptorRegistry.findInterceptors(InterceptionPhase.before, httpMethod, uri, acceptType);
 
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();
@@ -155,7 +160,7 @@ public class MatcherFilter implements Filter {
             }
 
             // AFTER filters
-            matchSet = interceptorsRegistry.findInterceptors(InterceptionPhase.after, httpMethod, uri, acceptType);
+            matchSet = interceptorRegistry.findInterceptors(InterceptionPhase.after, httpMethod, uri, acceptType);
 
             for (RouteMatch filterMatch : matchSet) {
                 Object filterTarget = filterMatch.getTarget();

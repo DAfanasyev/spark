@@ -14,9 +14,9 @@ import static java.util.Arrays.asList;
 public class InterceptorRegistration {
     public static enum InterceptionPhase { before, after }
 
-    public final Set<String> includedPathes = new HashSet<>();
-    public final Set<String> excludedPathes = new HashSet<>();
-    public final Set<String> accceptTypes = new HashSet<>();
+    public final Set<String> includedPaths = new HashSet<>();
+    public final Set<String> excludedPaths = new HashSet<>();
+    public final Set<String> acceptTypes = new HashSet<>();
     public final Set<HttpMethod> httpMethods = EnumSet.noneOf(HttpMethod.class);
     public final Set<InterceptionPhase> phases = EnumSet.noneOf(InterceptionPhase.class);
 
@@ -27,8 +27,8 @@ public class InterceptorRegistration {
         return this;
     }
 
-    public InterceptorRegistration before(String... pathes) {
-        return before().on(pathes);
+    public InterceptorRegistration before(String... paths) {
+        return before().on(paths);
     }
 
     public InterceptorRegistration after() {
@@ -36,8 +36,8 @@ public class InterceptorRegistration {
         return this;
     }
 
-    public InterceptorRegistration after(String... pathes) {
-        return after().on(pathes);
+    public InterceptorRegistration after(String... paths) {
+        return after().on(paths);
     }
 
     public InterceptorRegistration get() {
@@ -60,18 +60,18 @@ public class InterceptorRegistration {
         return this;
     }
 
-    public InterceptorRegistration on(String... pathes) {
-        this.includedPathes.addAll(asList(pathes));
+    public InterceptorRegistration on(String... paths) {
+        this.includedPaths.addAll(asList(paths));
         return this;
     }
 
     public InterceptorRegistration accepting(String... acceptTypes) {
-        this.accceptTypes.addAll(asList(acceptTypes));
+        this.acceptTypes.addAll(asList(acceptTypes));
         return this;
     }
 
-    public InterceptorRegistration except(String... pathes) {
-        this.excludedPathes.addAll(asList(pathes));
+    public InterceptorRegistration except(String... paths) {
+        this.excludedPaths.addAll(asList(paths));
         return this;
     }
 
