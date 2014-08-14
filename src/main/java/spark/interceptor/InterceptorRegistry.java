@@ -53,4 +53,7 @@ public class InterceptorRegistry {
         return routeMatches;
     }
 
+    public void clearInterceptors() {
+        registrations.clear();
+    }
 }

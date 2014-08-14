@@ -225,6 +225,7 @@ public abstract class SparkBase {
     public static synchronized void stop() {
         if (server != null) {
             routeMatcher.clearRoutes();
+            interceptorRegistry.clearInterceptors();
             server.stop();
         }
         initialized = false;
@@ -234,6 +235,7 @@ public abstract class SparkBase {
         runFromServlet = true;
         if (!initialized) {
             routeMatcher = RouteMatcherFactory.get();
+            interceptorRegistry = InterceptorRegistry.get();
             initialized = true;
         }
     }
