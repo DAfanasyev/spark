@@ -180,6 +180,10 @@ public class MimeParse {
         return Float.compare(lastOne.quality, 0) != 0 ? lastOne.mimeType : NO_MIME_TYPE;
     }
 
+    public static boolean mimeMatches(Collection<String> supported, String header) {
+        return !NO_MIME_TYPE.equals(mimeBestMatch(supported, header));
+    }
+
     private static boolean isBlank(String s) {
         return s == null || "".equals(s.trim());
     }

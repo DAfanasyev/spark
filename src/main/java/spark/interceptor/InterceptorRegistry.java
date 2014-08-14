@@ -9,8 +9,7 @@ import java.util.List;
 
 import static spark.PathMatcher.matches;
 import static spark.interceptor.InterceptorRegistration.InterceptionPhase;
-import static spark.utils.MimeParse.NO_MIME_TYPE;
-import static spark.utils.MimeParse.mimeBestMatch;
+import static spark.utils.MimeParse.mimeMatches;
 
 /**
  *
@@ -36,7 +35,7 @@ public class InterceptorRegistry {
         for (InterceptorRegistration ir : registrations) {
             if (!ir.phases.isEmpty() && !ir.phases.contains(phase)) continue;
             if (!ir.httpMethods.isEmpty() && !ir.httpMethods.contains(httpMethod)) continue;
-            if (!ir.acceptTypes.isEmpty() && NO_MIME_TYPE.equals(mimeBestMatch(ir.acceptTypes, acceptType))) continue;
+            if (!ir.acceptTypes.isEmpty() && mimeMatches(ir.acceptTypes, acceptType)) continue;
             for (String excludedPath : ir.excludedPaths) {
                 if (matches(excludedPath, path)) continue nextReg;
             }
