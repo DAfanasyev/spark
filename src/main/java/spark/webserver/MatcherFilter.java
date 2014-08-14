@@ -16,19 +16,20 @@
  */
 package spark.webserver;
 
-import spark.Access;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.HaltException;
 import spark.Request;
 import spark.RequestResponseFactory;
 import spark.Response;
-import spark.RouteImpl;
 import spark.exception.ExceptionHandlerImpl;
 import spark.exception.ExceptionMapper;
-import spark.interceptor.Interceptor;
+import spark.interceptor.InterceptorMatch;
 import spark.interceptor.InterceptorRegistry;
 import spark.route.HttpMethod;
 import spark.route.RouteMatch;
-import spark.route.SimpleRouteMatcher;
+import spark.route.RouteRegistry;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -42,7 +43,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+import static java.text.MessageFormat.format;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 import static spark.interceptor.InterceptorRegistration.InterceptionPhase;
+import static spark.interceptor.InterceptorRegistration.InterceptionPhase.after;
+import static spark.interceptor.InterceptorRegistration.InterceptionPhase.before;
 
 /**
  * Filter for matching of filters and routes.
@@ -51,163 +56,84 @@ import static spark.interceptor.InterceptorRegistration.InterceptionPhase;
  */
 public class MatcherFilter implements Filter {
 
+    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2>The requested route [{0}] has not been mapped in Spark</body></html>";
+    private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
+
     private static final String ACCEPT_TYPE_REQUEST_MIME_HEADER = "Accept";
 
-    private SimpleRouteMatcher routeMatcher;
+    private static final Logger log = LoggerFactory.getLogger(MatcherFilter.class);
+
     private InterceptorRegistry interceptorRegistry;
+    private RouteRegistry routeRegistry;
+
     private boolean isServletContext;
     private boolean hasOtherHandlers;
 
-    /**
-     * The logger.
-     */
-    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(MatcherFilter.class);
 
     /**
      * Constructor
      *
-     * @param routeMatcher     The route matcher
+     * @param routeRegistry    The route matcher
      * @param isServletContext If true, chain.doFilter will be invoked if request is not consumed by Spark.
      * @param hasOtherHandlers If true, do nothing if request is not consumed by Spark in order to let others handlers process the request.
      */
-    public MatcherFilter(SimpleRouteMatcher routeMatcher, InterceptorRegistry interceptorRegistry,
+    public MatcherFilter(RouteRegistry routeRegistry, InterceptorRegistry interceptorRegistry,
                          boolean isServletContext, boolean hasOtherHandlers) {
-        this.routeMatcher = routeMatcher;
+        this.routeRegistry = routeRegistry;
         this.interceptorRegistry = interceptorRegistry;
         this.isServletContext = isServletContext;
         this.hasOtherHandlers = hasOtherHandlers;
     }
 
+    @Override
     public void init(FilterConfig filterConfig) {
-        //
+        // Do nothing
     }
 
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, // NOSONAR
-                         FilterChain chain) throws IOException, ServletException { // NOSONAR
-        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest; // NOSONAR
+    @Override
+    public void destroy() {
+        // Do nothing
+    }
+
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
 
-        String httpMethodStr = httpRequest.getMethod().toLowerCase(); // NOSONAR
-        HttpMethod httpMethod = HttpMethod.valueOf(httpMethodStr);
-        String uri = httpRequest.getRequestURI(); // NOSONAR
+        String method = httpRequest.getMethod().toLowerCase();
+        String requestUri = httpRequest.getRequestURI();
         String acceptType = httpRequest.getHeader(ACCEPT_TYPE_REQUEST_MIME_HEADER);
 
-        String bodyContent = null;
+        log.debug(format("Request: httpMethod=''{0}'', requestUri=''{1}'', acceptType=''{2}''", method, requestUri, acceptType));
+
+        HttpMethod httpMethod = HttpMethod.valueOf(method);
 
         RequestWrapper req = new RequestWrapper();
         ResponseWrapper res = new ResponseWrapper();
 
-        LOG.debug("httpMethod:" + httpMethodStr + ", uri: " + uri);
+        RequestContext rqCtx = new RequestContext(httpMethod, requestUri, acceptType, req, res, httpRequest, httpResponse);
+
         try {
-            // BEFORE filters
-            List<RouteMatch> matchSet = interceptorRegistry.findInterceptors(InterceptionPhase.before, httpMethod, uri, acceptType);
+            executeInterceptors(before, rqCtx);
 
-            for (RouteMatch filterMatch : matchSet) {
-                Object filterTarget = filterMatch.getTarget();
-                if (filterTarget instanceof Interceptor) {
-                    Request request = RequestResponseFactory.create(filterMatch, httpRequest);
-                    Response response = RequestResponseFactory.create(httpResponse);
+            executeRouteHandlerAndRenderResult(rqCtx);
 
-                    Interceptor interceptor = (Interceptor) filterTarget;
+            executeInterceptors(after, rqCtx);
 
-                    req.setDelegate(request);
-                    res.setDelegate(response);
+        } catch (HaltException e) {
 
-                    interceptor.handle(req, res);
+            handleHaltException(e, rqCtx);
 
-                    String bodyAfterFilter = Access.getBody(response);
-                    if (bodyAfterFilter != null) {
-                        bodyContent = bodyAfterFilter;
-                    }
-                }
-            }
-            // BEFORE filters, END
-
-            RouteMatch match = null;
-            match = routeMatcher.findTargetForRequestedRoute(httpMethod, uri, acceptType);
-
-            Object target = null;
-            if (match != null) {
-                target = match.getTarget();
-            } else if (httpMethod == HttpMethod.head && bodyContent == null) {
-                // See if get is mapped to provide default head mapping
-                bodyContent =
-                        routeMatcher.findTargetForRequestedRoute(HttpMethod.get, uri, acceptType) != null ? "" : null;
-            }
-
-            if (target != null) {
-                try {
-                    String result = null;
-                    if (target instanceof RouteImpl) {
-                        RouteImpl route = ((RouteImpl) target);
-                        Request request = RequestResponseFactory.create(match, httpRequest);
-                        Response response = RequestResponseFactory.create(httpResponse);
-
-                        req.setDelegate(request);
-                        res.setDelegate(response);
-
-                        Object element = route.handle(req, res);
-
-                        result = route.render(element);
-                        // result = element.toString(); // TODO: Remove later when render fixed
-                    }
-                    if (result != null) {
-                        bodyContent = result;
-                    }
-                } catch (HaltException hEx) { // NOSONAR
-                    throw hEx; // NOSONAR
-                }
-            }
-
-            // AFTER filters
-            matchSet = interceptorRegistry.findInterceptors(InterceptionPhase.after, httpMethod, uri, acceptType);
-
-            for (RouteMatch filterMatch : matchSet) {
-                Object filterTarget = filterMatch.getTarget();
-                if (filterTarget instanceof Interceptor) {
-                    Request request = RequestResponseFactory.create(filterMatch, httpRequest);
-                    Response response = RequestResponseFactory.create(httpResponse);
-
-                    req.setDelegate(request);
-                    res.setDelegate(response);
-
-                    Interceptor interceptor = (Interceptor) filterTarget;
-                    interceptor.handle(req, res);
-
-                    String bodyAfterFilter = Access.getBody(response);
-                    if (bodyAfterFilter != null) {
-                        bodyContent = bodyAfterFilter;
-                    }
-                }
-            }
-            // AFTER filters, END
-
-        } catch (HaltException hEx) {
-            LOG.debug("halt performed");
-            httpResponse.setStatus(hEx.getStatusCode());
-            if (hEx.getBody() != null) {
-                bodyContent = hEx.getBody();
-            } else {
-                bodyContent = "";
-            }
         } catch (Exception e) {
-            ExceptionHandlerImpl handler = ExceptionMapper.getInstance().getHandler(e);
-            if (handler != null) {
-                handler.handle(e, req, res);
-                String bodyAfterFilter = Access.getBody(res.getDelegate());
-                if (bodyAfterFilter != null) {
-                    bodyContent = bodyAfterFilter;
-                }
-            } else {
-                LOG.error("", e);
-                httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                bodyContent = INTERNAL_ERROR;
-            }
+
+            handleException(e, rqCtx);
+
         }
+
+        String bodyContent = rqCtx.bodyContent;
 
         // If redirected and content is null set to empty string to not throw NotConsumedException
         if (bodyContent == null && res.isRedirected()) {
-            bodyContent = "";
+            bodyContent = StringUtils.EMPTY;
         }
 
         boolean consumed = bodyContent != null;
@@ -218,27 +144,121 @@ public class MatcherFilter implements Filter {
 
         if (!consumed && !isServletContext) {
             httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            bodyContent = String.format(NOT_FOUND, uri);
+            bodyContent = format(NOT_FOUND, requestUri);
             consumed = true;
         }
 
         if (consumed) {
-            // Write body content
             if (!httpResponse.isCommitted()) {
                 if (httpResponse.getContentType() == null) {
                     httpResponse.setContentType("text/html; charset=utf-8");
                 }
                 httpResponse.getOutputStream().write(bodyContent.getBytes("utf-8"));
             }
-        } else if (chain != null) {
-            chain.doFilter(httpRequest, httpResponse);
+        } else {
+            if (chain != null) {
+                chain.doFilter(httpRequest, httpResponse);
+            }
         }
     }
 
-    public void destroy() {
-        // TODO Auto-generated method stub
+    private void executeInterceptors(InterceptionPhase phase, RequestContext rqCtx) throws Exception {
+        // Finds interceptor to execute on the phase
+        List<InterceptorMatch> matches = interceptorRegistry.findInterceptors(phase, rqCtx.httpMethod, rqCtx.requestUri, rqCtx.acceptType);
+
+        for (InterceptorMatch match : matches) {
+            Request request = RequestResponseFactory.create(match, rqCtx.httpReq);
+            Response response = RequestResponseFactory.create(rqCtx.httpRes);
+
+            rqCtx.reqWrapper.setDelegate(request);
+            rqCtx.resWrapper.setDelegate(response);
+
+            match.interceptor.handle(rqCtx.reqWrapper, rqCtx.resWrapper);
+
+            rqCtx.setBodyContentFromResponse();
+        }
     }
 
-    private static final String NOT_FOUND = "<html><body><h2>404 Not found</h2>The requested route [%s] has not been mapped in Spark</body></html>";
-    private static final String INTERNAL_ERROR = "<html><body><h2>500 Internal Error</h2></body></html>";
+    private void executeRouteHandlerAndRenderResult(RequestContext rqCtx) throws Exception {
+        // Finds route handler to execute and render result
+        RouteMatch match = routeRegistry.findTargetForRequestedRoute(rqCtx.httpMethod, rqCtx.requestUri, rqCtx.acceptType);
+
+        if (match != null) {
+            if (match.route != null) {
+                rqCtx.reqWrapper.setDelegate(RequestResponseFactory.create(match, rqCtx.httpReq));
+                rqCtx.resWrapper.setDelegate(RequestResponseFactory.create(rqCtx.httpRes));
+
+                Object handlerResult = match.route.handle(rqCtx.reqWrapper, rqCtx.resWrapper);
+                String renderedBodyContent = match.route.render(handlerResult);
+
+                rqCtx.setBodyContentNotNull(renderedBodyContent);
+            }
+        } else {
+            // The HEAD method is identical to GET except that the server
+            // MUST NOT return a message-body in the response.
+            // If GET is mapped return same headers and empty body.
+            if (rqCtx.httpMethod == HttpMethod.head && rqCtx.bodyContent == null) {
+                RouteMatch getMatch = routeRegistry.findTargetForRequestedRoute(HttpMethod.get, rqCtx.requestUri, rqCtx.acceptType);
+                // Use empty body to make request consumed
+                rqCtx.bodyContent = getMatch != null ? StringUtils.EMPTY : null;
+            }
+        }
+    }
+
+    private void handleHaltException(HaltException exception, RequestContext rqCtx) {
+        log.debug(format("Halt occurred: statusCode=''{0}''", exception.getStatusCode()));
+        rqCtx.httpRes.setStatus(exception.getStatusCode());
+        rqCtx.setBodyContentOrEmpty(exception.getBody());
+    }
+
+    private void handleException(Exception exception, RequestContext rqCtx) {
+        ExceptionHandlerImpl handler = ExceptionMapper.getInstance().getHandler(exception);
+        if (handler != null) {
+            handler.handle(exception, rqCtx.reqWrapper, rqCtx.resWrapper);
+            rqCtx.setBodyContentFromResponse();
+        } else {
+            log.error(StringUtils.EMPTY, exception);
+            rqCtx.httpRes.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            rqCtx.bodyContent = INTERNAL_ERROR;
+        }
+    }
+
+    /**
+     * Context object to hold all necessary staff to run request through interceptors and route handler
+     */
+    private static class RequestContext {
+        public final HttpMethod httpMethod;
+        public final String requestUri;
+        public final String acceptType;
+        public final RequestWrapper reqWrapper;
+        public final ResponseWrapper resWrapper;
+        public final HttpServletRequest httpReq;
+        public final HttpServletResponse httpRes;
+
+        public String bodyContent;
+
+        private RequestContext(HttpMethod httpMethod, String requestUri, String acceptType,
+                               RequestWrapper reqWrapper, ResponseWrapper resWrapper,
+                               HttpServletRequest httpReq, HttpServletResponse httpRes) {
+            this.httpMethod = httpMethod;
+            this.requestUri = requestUri;
+            this.acceptType = acceptType;
+            this.reqWrapper = reqWrapper;
+            this.resWrapper = resWrapper;
+            this.httpReq = httpReq;
+            this.httpRes = httpRes;
+        }
+
+        public void setBodyContentNotNull(String bodyContent) {
+            this.bodyContent = defaultString(bodyContent, this.bodyContent);
+        }
+
+        public void setBodyContentOrEmpty(String bodyContent) {
+            this.bodyContent = defaultString(bodyContent, StringUtils.EMPTY);
+        }
+
+        public void setBodyContentFromResponse() {
+            setBodyContentNotNull(resWrapper.getDelegate().body());
+        }
+    }
 }

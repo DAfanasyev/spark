@@ -19,14 +19,12 @@ package spark;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import spark.route.RouteMatch;
-
 public final class RequestResponseFactory {
 
     private RequestResponseFactory() {
     }
 
-    public static Request create(RouteMatch match, HttpServletRequest request) {
+    public static Request create(Match match, HttpServletRequest request) {
         return new Request(match, request);
     }
 

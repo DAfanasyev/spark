@@ -1,16 +1,8 @@
 package spark;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.Principal;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import org.junit.Test;
+import spark.route.HttpMethod;
+import spark.route.RouteMatch;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
@@ -26,17 +18,24 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
-import org.junit.Test;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.Principal;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
-import spark.route.HttpMethod;
-import spark.route.RouteMatch;
+import static org.junit.Assert.assertEquals;
 
 public class RequestTest {
 
     private static final String THE_SERVLET_PATH = "/the/servlet/path";
     private static final String THE_CONTEXT_PATH = "/the/context/path";
     
-    RouteMatch match =  new RouteMatch(HttpMethod.get,null,"/hi","/hi", "text/html");
+    Match match = new RouteMatch(HttpMethod.get, "text/html", "/hi", "/hi", null);
 
     @Test
     public void queryParamShouldReturnsParametersFromQueryString() {

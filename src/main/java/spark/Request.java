@@ -16,6 +16,13 @@
  */
 package spark;
 
+import spark.utils.IOUtils;
+import spark.utils.SparkUtils;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -25,14 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import spark.route.RouteMatch;
-import spark.utils.IOUtils;
-import spark.utils.SparkUtils;
 
 /**
  * Provides information about the HTTP request
@@ -91,11 +90,11 @@ public class Request {
      * @param match   the route match
      * @param request the servlet request
      */
-    Request(RouteMatch match, HttpServletRequest request) {
+    Request(Match match, HttpServletRequest request) {
         this.servletRequest = request;
 
-        List<String> requestList = SparkUtils.convertRouteToList(match.getRequestURI());
-        List<String> matchedList = SparkUtils.convertRouteToList(match.getMatchUri());
+        List<String> requestList = SparkUtils.convertRouteToList(match.requestUri);
+        List<String> matchedList = SparkUtils.convertRouteToList(match.matchedUri);
 
         params = getParams(requestList, matchedList);
         splat = getSplat(requestList, matchedList);

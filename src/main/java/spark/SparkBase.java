@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 
 import spark.interceptor.InterceptorRegistration;
 import spark.interceptor.InterceptorRegistry;
-import spark.route.RouteMatcherFactory;
-import spark.route.SimpleRouteMatcher;
+import spark.route.HttpMethod;
+import spark.route.RouteEntry;
+import spark.route.RouteRegistryFactory;
+import spark.route.RouteRegistry;
 import spark.servlet.SparkFilter;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
@@ -33,8 +35,10 @@ public abstract class SparkBase {
     protected static String externalStaticFileFolder = null;
 
     protected static SparkServer server;
-    protected static SimpleRouteMatcher routeMatcher;
+
+    protected static RouteRegistry routeRegistry;
     protected static InterceptorRegistry interceptorRegistry;
+
     private static boolean runFromServlet;
 
     private static boolean servletStaticLocationSet;
@@ -224,7 +228,7 @@ public abstract class SparkBase {
      */
     public static synchronized void stop() {
         if (server != null) {
-            routeMatcher.clearRoutes();
+            routeRegistry.clearRoutes();
             interceptorRegistry.clearInterceptors();
             server.stop();
         }
@@ -234,7 +238,7 @@ public abstract class SparkBase {
     static synchronized void runFromServlet() {
         runFromServlet = true;
         if (!initialized) {
-            routeMatcher = RouteMatcherFactory.get();
+            routeRegistry = RouteRegistryFactory.get();
             interceptorRegistry = InterceptorRegistry.get();
             initialized = true;
         }
@@ -263,19 +267,17 @@ public abstract class SparkBase {
         if (acceptType == null) {
             acceptType = DEFAULT_ACCEPT_TYPE;
         }
-        RouteImpl impl = new RouteImpl(path, acceptType) {
+        return new RouteImpl(path, acceptType) {
             @Override
             public Object handle(Request request, Response response) throws Exception {
                 return route.handle(request, response);
             }
         };
-        return impl;
     }
 
-    protected static void addRoute(String httpMethod, RouteImpl route) {
+    protected static void addRoute(HttpMethod httpMethod, RouteImpl route) {
         init();
-        routeMatcher.parseValidateAddRoute(httpMethod + " '" + route.getPath()
-                                                   + "'", route.getAcceptType(), route);
+        routeRegistry.addRoute(new RouteEntry(httpMethod, route.getPath(), route.getAcceptType(), route));
     }
 
     protected static InterceptorRegistration addInterceptor(InterceptorRegistration registration) {
@@ -286,7 +288,7 @@ public abstract class SparkBase {
 
     private static synchronized void init() {
         if (!initialized) {
-            routeMatcher = RouteMatcherFactory.get();
+            routeRegistry = RouteRegistryFactory.get();
             interceptorRegistry = InterceptorRegistry.get();
             new Thread(new Runnable() {
                 @Override

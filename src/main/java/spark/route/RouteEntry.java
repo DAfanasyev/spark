@@ -1,34 +1,35 @@
 package spark.route;
 
 import spark.PathMatcher;
-import spark.utils.SparkUtils;
+import spark.RouteImpl;
 
 /**
  * Created by Per Wendel on 2014-05-10.
  */
-class RouteEntry {
+public class RouteEntry {
+    public final HttpMethod httpMethod;
+    public final String path;
+    public final String acceptedType;
+    public final RouteImpl route;
 
-    HttpMethod httpMethod;
-    String path;
-    String acceptedType;
-    Object target;
-
-    boolean matches(HttpMethod httpMethod, String path) {
-        if ((httpMethod == HttpMethod.before || httpMethod == HttpMethod.after)
-                && (this.httpMethod == httpMethod)
-                && this.path.equals(SparkUtils.ALL_PATHS)) {
-            // Is filter and matches all
-            return true;
-        }
-        boolean match = false;
-        if (this.httpMethod == httpMethod) {
-            match = PathMatcher.matches(this.path, path);
-        }
-        return match;
+    public RouteEntry(HttpMethod httpMethod, String path, String acceptedType, RouteImpl route) {
+        this.httpMethod = httpMethod;
+        this.path = path;
+        this.acceptedType = acceptedType;
+        this.route = route;
     }
 
+    public boolean matches(HttpMethod httpMethod, String path) {
+        return (this.httpMethod == httpMethod) && PathMatcher.matches(this.path, path);
+    }
 
+    @Override
     public String toString() {
-        return httpMethod.name() + ", " + path + ", " + target;
+        return "RouteEntry{" +
+                "httpMethod=" + httpMethod +
+                ", path='" + path + '\'' +
+                ", acceptedType='" + acceptedType + '\'' +
+                ", route=" + route +
+                '}';
     }
 }

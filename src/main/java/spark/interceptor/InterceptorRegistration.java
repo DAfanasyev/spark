@@ -79,4 +79,16 @@ public class InterceptorRegistration {
         this.handler = interceptor;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "InterceptorRegistration{" +
+                "includedPaths=" + includedPaths +
+                ", excludedPaths=" + excludedPaths +
+                ", acceptTypes=" + acceptTypes +
+                ", httpMethods=" + httpMethods +
+                ", phases=" + phases +
+                ", handler=" + handler +
+                '}';
+    }
 }

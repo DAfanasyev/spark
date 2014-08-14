@@ -21,7 +21,6 @@ import spark.exception.ExceptionMapper;
 import spark.interceptor.Interceptor;
 import spark.interceptor.InterceptorRegistration;
 import spark.route.HttpMethod;
-import spark.utils.SparkUtils;
 
 /**
  * The main building block of a Spark application is a set of routes. A route is
@@ -51,7 +50,7 @@ public final class Spark extends SparkBase {
      * @param route The route
      */
     public static synchronized void get(final String path, final Route route) {
-        addRoute(HttpMethod.get.name(), wrap(path, route));
+        addRoute(HttpMethod.get, wrap(path, route));
     }
 
     /**
@@ -61,7 +60,7 @@ public final class Spark extends SparkBase {
      * @param route The route
      */
     public static synchronized void post(String path, Route route) {
-        addRoute(HttpMethod.post.name(), wrap(path, route));
+        addRoute(HttpMethod.post, wrap(path, route));
     }
 
     /**
@@ -71,7 +70,7 @@ public final class Spark extends SparkBase {
      * @param route The route
      */
     public static synchronized void put(String path, Route route) {
-        addRoute(HttpMethod.put.name(), wrap(path, route));
+        addRoute(HttpMethod.put, wrap(path, route));
     }
 
     /**
@@ -81,7 +80,7 @@ public final class Spark extends SparkBase {
      * @param route The route
      */
     public static synchronized void patch(String path, Route route) {
-        addRoute(HttpMethod.patch.name(), wrap(path, route));
+        addRoute(HttpMethod.patch, wrap(path, route));
     }
 
     /**
@@ -91,7 +90,7 @@ public final class Spark extends SparkBase {
      * @param route The route
      */
     public static synchronized void delete(String path, Route route) {
-        addRoute(HttpMethod.delete.name(), wrap(path, route));
+        addRoute(HttpMethod.delete, wrap(path, route));
     }
 
     /**
@@ -101,7 +100,7 @@ public final class Spark extends SparkBase {
      * @param route The route
      */
     public static synchronized void head(String path, Route route) {
-        addRoute(HttpMethod.head.name(), wrap(path, route));
+        addRoute(HttpMethod.head, wrap(path, route));
     }
 
     /**
@@ -111,7 +110,7 @@ public final class Spark extends SparkBase {
      * @param route The route
      */
     public static synchronized void trace(String path, Route route) {
-        addRoute(HttpMethod.trace.name(), wrap(path, route));
+        addRoute(HttpMethod.trace, wrap(path, route));
     }
 
     /**
@@ -121,7 +120,7 @@ public final class Spark extends SparkBase {
      * @param route The route
      */
     public static synchronized void connect(String path, Route route) {
-        addRoute(HttpMethod.connect.name(), wrap(path, route));
+        addRoute(HttpMethod.connect, wrap(path, route));
     }
 
     /**
@@ -131,7 +130,7 @@ public final class Spark extends SparkBase {
      * @param route The route
      */
     public static synchronized void options(String path, Route route) {
-        addRoute(HttpMethod.options.name(), wrap(path, route));
+        addRoute(HttpMethod.options, wrap(path, route));
     }
 
     /**
@@ -206,7 +205,7 @@ public final class Spark extends SparkBase {
      * @param route      The route
      */
     public static synchronized void get(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.get.name(), wrap(path, acceptType, route));
+        addRoute(HttpMethod.get, wrap(path, acceptType, route));
     }
 
     /**
@@ -217,7 +216,7 @@ public final class Spark extends SparkBase {
      * @param route      The route
      */
     public static synchronized void post(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.post.name(), wrap(path, acceptType, route));
+        addRoute(HttpMethod.post, wrap(path, acceptType, route));
     }
 
     /**
@@ -228,7 +227,7 @@ public final class Spark extends SparkBase {
      * @param route      The route
      */
     public static synchronized void put(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.put.name(), wrap(path, acceptType, route));
+        addRoute(HttpMethod.put, wrap(path, acceptType, route));
     }
 
     /**
@@ -239,7 +238,7 @@ public final class Spark extends SparkBase {
      * @param route      The route
      */
     public static synchronized void patch(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.patch.name(), wrap(path, acceptType, route));
+        addRoute(HttpMethod.patch, wrap(path, acceptType, route));
     }
 
     /**
@@ -250,7 +249,7 @@ public final class Spark extends SparkBase {
      * @param route      The route
      */
     public static synchronized void delete(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.delete.name(), wrap(path, acceptType, route));
+        addRoute(HttpMethod.delete, wrap(path, acceptType, route));
     }
 
     /**
@@ -261,7 +260,7 @@ public final class Spark extends SparkBase {
      * @param route      The route
      */
     public static synchronized void head(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.head.name(), wrap(path, acceptType, route));
+        addRoute(HttpMethod.head, wrap(path, acceptType, route));
     }
 
     /**
@@ -272,7 +271,7 @@ public final class Spark extends SparkBase {
      * @param route      The route
      */
     public static synchronized void trace(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.trace.name(), wrap(path, acceptType, route));
+        addRoute(HttpMethod.trace, wrap(path, acceptType, route));
     }
 
     /**
@@ -283,7 +282,7 @@ public final class Spark extends SparkBase {
      * @param route      The route
      */
     public static synchronized void connect(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.connect.name(), wrap(path, acceptType, route));
+        addRoute(HttpMethod.connect, wrap(path, acceptType, route));
     }
 
     /**
@@ -294,7 +293,7 @@ public final class Spark extends SparkBase {
      * @param route      The route
      */
     public static synchronized void options(String path, String acceptType, Route route) {
-        addRoute(HttpMethod.options.name(), wrap(path, acceptType, route));
+        addRoute(HttpMethod.options, wrap(path, acceptType, route));
     }
 
 
@@ -304,7 +303,7 @@ public final class Spark extends SparkBase {
      * @param interceptor The interceptor
      */
     public static synchronized InterceptorRegistration before(Interceptor interceptor) {
-        return addInterceptor(new InterceptorRegistration().before(SparkUtils.ALL_PATHS).execute(interceptor));
+        return addInterceptor(new InterceptorRegistration().execute(interceptor));
     }
 
     /**
@@ -313,7 +312,7 @@ public final class Spark extends SparkBase {
      * @param interceptor The interceptor
      */
     public static synchronized InterceptorRegistration after(Interceptor interceptor) {
-        return addInterceptor(new InterceptorRegistration().after(SparkUtils.ALL_PATHS).execute(interceptor));
+        return addInterceptor(new InterceptorRegistration().execute(interceptor));
     }
 
     /**
@@ -360,7 +359,7 @@ public final class Spark extends SparkBase {
      * @param engine the template engine
      */
     public static synchronized void get(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.get.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.get, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -375,7 +374,7 @@ public final class Spark extends SparkBase {
                                         String acceptType,
                                         TemplateViewRoute route,
                                         TemplateEngine engine) {
-        addRoute(HttpMethod.get.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.get, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -386,7 +385,7 @@ public final class Spark extends SparkBase {
      * @param engine the template engine
      */
     public static synchronized void post(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.post.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.post, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -401,7 +400,7 @@ public final class Spark extends SparkBase {
                                          String acceptType,
                                          TemplateViewRoute route,
                                          TemplateEngine engine) {
-        addRoute(HttpMethod.post.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.post, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -412,7 +411,7 @@ public final class Spark extends SparkBase {
      * @param engine the template engine
      */
     public static synchronized void put(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.put.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.put, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -427,7 +426,7 @@ public final class Spark extends SparkBase {
                                         String acceptType,
                                         TemplateViewRoute route,
                                         TemplateEngine engine) {
-        addRoute(HttpMethod.put.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.put, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -438,7 +437,7 @@ public final class Spark extends SparkBase {
      * @param engine the template engine
      */
     public static synchronized void delete(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.delete.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.delete, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -453,7 +452,7 @@ public final class Spark extends SparkBase {
                                            String acceptType,
                                            TemplateViewRoute route,
                                            TemplateEngine engine) {
-        addRoute(HttpMethod.delete.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.delete, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -464,7 +463,7 @@ public final class Spark extends SparkBase {
      * @param engine the template engine
      */
     public static synchronized void patch(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.patch.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.patch, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -479,7 +478,7 @@ public final class Spark extends SparkBase {
                                           String acceptType,
                                           TemplateViewRoute route,
                                           TemplateEngine engine) {
-        addRoute(HttpMethod.patch.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.patch, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -490,7 +489,7 @@ public final class Spark extends SparkBase {
      * @param engine the template engine
      */
     public static synchronized void head(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.head.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.head, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -505,7 +504,7 @@ public final class Spark extends SparkBase {
                                          String acceptType,
                                          TemplateViewRoute route,
                                          TemplateEngine engine) {
-        addRoute(HttpMethod.head.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.head, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -516,7 +515,7 @@ public final class Spark extends SparkBase {
      * @param engine the template engine
      */
     public static synchronized void trace(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.trace.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.trace, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -531,7 +530,7 @@ public final class Spark extends SparkBase {
                                           String acceptType,
                                           TemplateViewRoute route,
                                           TemplateEngine engine) {
-        addRoute(HttpMethod.trace.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.trace, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -542,7 +541,7 @@ public final class Spark extends SparkBase {
      * @param engine the template engine
      */
     public static synchronized void connect(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.connect.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.connect, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -557,7 +556,7 @@ public final class Spark extends SparkBase {
                                             String acceptType,
                                             TemplateViewRoute route,
                                             TemplateEngine engine) {
-        addRoute(HttpMethod.connect.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.connect, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     /**
@@ -568,7 +567,7 @@ public final class Spark extends SparkBase {
      * @param engine the template engine
      */
     public static synchronized void options(String path, TemplateViewRoute route, TemplateEngine engine) {
-        addRoute(HttpMethod.options.name(), TemplateViewRouteImpl.create(path, route, engine));
+        addRoute(HttpMethod.options, TemplateViewRouteImpl.create(path, route, engine));
     }
 
     /**
@@ -583,7 +582,7 @@ public final class Spark extends SparkBase {
                                             String acceptType,
                                             TemplateViewRoute route,
                                             TemplateEngine engine) {
-        addRoute(HttpMethod.options.name(), TemplateViewRouteImpl.create(path, acceptType, route, engine));
+        addRoute(HttpMethod.options, TemplateViewRouteImpl.create(path, acceptType, route, engine));
     }
 
     //////////////////////////////////////////////////
@@ -602,7 +601,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void get(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.get.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.get, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -614,7 +613,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void get(String path, String acceptType, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.get.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.get, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -625,7 +624,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void post(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.post.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.post, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -637,7 +636,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void post(String path, String acceptType, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.post.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.post, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -648,7 +647,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void put(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.put.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.put, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -660,7 +659,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void put(String path, String acceptType, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.put.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.put, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -671,7 +670,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void delete(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.delete.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.delete, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -686,7 +685,7 @@ public final class Spark extends SparkBase {
                                            String acceptType,
                                            Route route,
                                            ResponseTransformer transformer) {
-        addRoute(HttpMethod.delete.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.delete, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -697,7 +696,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void head(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.head.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.head, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -709,7 +708,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void head(String path, String acceptType, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.head.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.head, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -720,7 +719,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void connect(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.connect.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.connect, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -735,7 +734,7 @@ public final class Spark extends SparkBase {
                                             String acceptType,
                                             Route route,
                                             ResponseTransformer transformer) {
-        addRoute(HttpMethod.connect.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.connect, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -746,7 +745,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void trace(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.trace.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.trace, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -761,7 +760,7 @@ public final class Spark extends SparkBase {
                                           String acceptType,
                                           Route route,
                                           ResponseTransformer transformer) {
-        addRoute(HttpMethod.trace.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.trace, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -772,7 +771,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void options(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.options.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.options, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -787,7 +786,7 @@ public final class Spark extends SparkBase {
                                             String acceptType,
                                             Route route,
                                             ResponseTransformer transformer) {
-        addRoute(HttpMethod.options.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.options, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     /**
@@ -798,7 +797,7 @@ public final class Spark extends SparkBase {
      * @param transformer the response transformer
      */
     public static synchronized void patch(String path, Route route, ResponseTransformer transformer) {
-        addRoute(HttpMethod.patch.name(), ResponseTransformerRouteImpl.create(path, route, transformer));
+        addRoute(HttpMethod.patch, ResponseTransformerRouteImpl.create(path, route, transformer));
     }
 
     /**
@@ -813,7 +812,7 @@ public final class Spark extends SparkBase {
                                           String acceptType,
                                           Route route,
                                           ResponseTransformer transformer) {
-        addRoute(HttpMethod.patch.name(), ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
+        addRoute(HttpMethod.patch, ResponseTransformerRouteImpl.create(path, acceptType, route, transformer));
     }
 
     //////////////////////////////////////////////////
