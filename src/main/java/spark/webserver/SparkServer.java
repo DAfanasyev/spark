@@ -16,14 +16,6 @@
  */
 package spark.webserver;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -35,6 +27,14 @@ import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Spark server implementation
@@ -76,8 +76,7 @@ public class SparkServer {
             try (ServerSocket s = new ServerSocket(0)) {
                 port = s.getLocalPort();
             } catch (IOException e) {
-                System.err.println(
-                        "Could not get first available port (port set to 0), using default: " + SPARK_DEFAULT_PORT);
+                log.warn("Could not get first available port (port set to 0), using default: {}", SPARK_DEFAULT_PORT);
                 port = SPARK_DEFAULT_PORT;
             }
         }
@@ -119,8 +118,8 @@ public class SparkServer {
         }
 
         try {
-            System.out.println("== " + NAME + " has ignited ..."); // NOSONAR
-            System.out.println(">> Listening on " + host + ":" + port); // NOSONAR
+            log.info("== " + NAME + " has ignited ..."); // NOSONAR
+            log.info(">> Listening on " + host + ":" + port); // NOSONAR
 
             server.start();
             server.join();
@@ -131,7 +130,7 @@ public class SparkServer {
     }
 
     public void stop() {
-        System.out.print(">>> " + NAME + " shutting down..."); // NOSONAR
+        log.info(">>> " + NAME + " is shutting down..."); // NOSONAR
         try {
             if (server != null) {
                 server.stop();
@@ -140,7 +139,7 @@ public class SparkServer {
             e.printStackTrace(); // NOSONAR
             System.exit(100); // NOSONAR
         }
-        System.out.println("done"); // NOSONAR
+        log.info(">>> " + NAME + " is down!"); // NOSONAR
     }
 
     /**

@@ -1,11 +1,19 @@
 package spark.examples.interceptor;
 
-import static spark.Spark.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.beforeAll;
+import static spark.Spark.halt;
 
 /**
  * This example shows interceptor complex configuration.
  */
 public class FlexibleInterceptor {
+
+    private static final Logger log = LoggerFactory.getLogger(FlexibleInterceptor.class);
 
     public static void main(String[] args) {
         // Secure everything except public resources
@@ -20,7 +28,7 @@ public class FlexibleInterceptor {
 
         // Interceptor for concrete acceptType request
         beforeAll().accepting("application/json").execute((rq, rs) -> {
-            System.out.println("application/json interceptor!");
+            log.info("application/json interceptor!");
         });
 
         // Interceptor for concrete http methods
@@ -29,11 +37,11 @@ public class FlexibleInterceptor {
         });
 
         before().get().on("/readonly").execute((rq, rs) -> {
-            System.out.println("You are welcome!");
+            log.info("You are welcome!");
         });
 
         // Runs after /bye request with any http method and acceptType
-        after("/bye").execute((rq, rs) -> System.out.println("See you again"));
+        after("/bye").execute((rq, rs) -> log.info("See you again"));
     }
 
 }

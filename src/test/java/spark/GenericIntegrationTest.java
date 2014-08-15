@@ -1,19 +1,20 @@
 package spark;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
+import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import junit.framework.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import spark.examples.exception.BaseException;
 import spark.examples.exception.NotFoundException;
 import spark.examples.exception.SubclassOfBaseException;
 import spark.util.SparkTestUtil;
 import spark.util.SparkTestUtil.UrlResponse;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import static spark.Spark.after;
 import static spark.Spark.before;
@@ -26,6 +27,8 @@ import static spark.Spark.post;
 import static spark.Spark.staticFileLocation;
 
 public class GenericIntegrationTest {
+
+    private static final Logger log = LoggerFactory.getLogger(GenericIntegrationTest.class);
 
     private static final String NOT_FOUND_BRO = "Not found bro";
 
@@ -322,7 +325,7 @@ public class GenericIntegrationTest {
     public void testPost() {
         try {
             UrlResponse response = testUtil.doMethod("POST", "/poster", "Fo shizzy");
-            System.out.println(response.body);
+            log.info(response.body);
             Assert.assertEquals(201, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
         } catch (Throwable e) {
@@ -334,7 +337,7 @@ public class GenericIntegrationTest {
     public void testPatch() {
         try {
             UrlResponse response = testUtil.doMethod("PATCH", "/patcher", "Fo shizzy");
-            System.out.println(response.body);
+            log.info(response.body);
             Assert.assertEquals(200, response.status);
             Assert.assertTrue(response.body.contains("Fo shizzy"));
         } catch (Throwable e) {

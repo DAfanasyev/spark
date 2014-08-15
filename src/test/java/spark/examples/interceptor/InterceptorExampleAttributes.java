@@ -16,6 +16,9 @@
  */
 package spark.examples.interceptor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static spark.Spark.after;
 import static spark.Spark.get;
 
@@ -26,6 +29,8 @@ import static spark.Spark.get;
  */
 public class InterceptorExampleAttributes {
 
+    private static final Logger log = LoggerFactory.getLogger(InterceptorExampleAttributes.class);
+
     public static void main(String[] args) {
         get("/hi", (request, response) -> {
             request.attribute("foo", "bar");
@@ -34,7 +39,7 @@ public class InterceptorExampleAttributes {
 
         after("/hi", (request, response) -> {
             for (String attr : request.attributes()) {
-                System.out.println("attr: " + attr);
+                log.info("attr: " + attr);
             }
         });
 

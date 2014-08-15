@@ -16,19 +16,24 @@
  */
 package spark.examples.interceptor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static spark.Spark.after;
 import static spark.Spark.before;
 
 
 public class DummyInterceptor {
 
+    private static final Logger log = LoggerFactory.getLogger(DummyInterceptor.class);
+
     public static void main(String[] args) {
         before((request, response) -> {
-            System.out.println("Before");
+            log.info("Before");
         });
 
         after((request, response) -> {
-            System.out.println("After");
+            log.info("After");
         });
     }
 
