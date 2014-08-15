@@ -1,6 +1,6 @@
 package spark.servlet;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
