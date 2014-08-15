@@ -1,10 +1,10 @@
 package spark;
 
+import javax.servlet.http.HttpSession;
+
 import java.util.Enumeration;
 import java.util.Set;
 import java.util.TreeSet;
-
-import javax.servlet.http.HttpSession;
 
 /**
  * Provides session information.
@@ -60,7 +60,7 @@ public class Session {
      * containing the names of all the objects bound to this session.
      */
     public Set<String> attributes() {
-        TreeSet<String> attributes = new TreeSet<String>();
+        TreeSet<String> attributes = new TreeSet<>();
         Enumeration<String> enumeration = session.getAttributeNames();
         while (enumeration.hasMoreElements()) {
             attributes.add(enumeration.nextElement());

@@ -1,7 +1,7 @@
 package spark;
 
-import org.junit.Assert;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -58,49 +58,29 @@ public class GenericIntegrationTest {
         staticFileLocation("/client");
         externalStaticFileLocation(System.getProperty("java.io.tmpdir"));
 
-        before("/secretcontent/*", (request, response) -> {
-            halt(401, "Go Away!");
-        });
+        before("/secretcontent/*", (request, response) -> halt(401, "Go Away!"));
 
-        before("/protected/*", "application/xml", (request, response) -> {
-            halt(401, "Go Away!");
-        });
+        before("/protected/*", "application/xml", (request, response) -> halt(401, "Go Away!"));
 
-        before("/protected/*", "application/json", (request, response) -> {
-            halt(401, "{\"message\": \"Go Away!\"}");
-        });
+        before("/protected/*", "application/json", (request, response) -> halt(401, "{\"message\": \"Go Away!\"}"));
 
-        get("/hi", "application/json", (request, response) -> {
-            return "{\"message\": \"Hello World\"}";
-        });
+        get("/hi", "application/json", (request, response) -> "{\"message\": \"Hello World\"}");
 
-        get("/hi", (request, response) -> {
-            return "Hello World!";
-        });
+        get("/hi", (request, response) -> "Hello World!");
 
-        get("/param/:param", (request, response) -> {
-            return "echo: " + request.params(":param");
-        });
+        get("/param/:param", (request, response) -> "echo: " + request.params(":param"));
 
-        get("/paramandwild/:param/stuff/*", (request, response) -> {
-            return "paramandwild: " + request.params(":param") + request.splat()[0];
-        });
+        get("/paramandwild/:param/stuff/*", (request, response) -> "paramandwild: " + request.params(":param") + request.splat()[0]);
 
-        get("/paramwithmaj/:paramWithMaj", (request, response) -> {
-            return "echo: " + request.params(":paramWithMaj");
-        });
+        get("/paramwithmaj/:paramWithMaj", (request, response) -> "echo: " + request.params(":paramWithMaj"));
 
-        get("/templateView", (request, response) -> {
-            return new ModelAndView("Hello", "my view");
-        }, new TemplateEngine() {
+        get("/templateView", (request, response) -> new ModelAndView("Hello", "my view"), new TemplateEngine() {
             public String render(ModelAndView modelAndView) {
                 return modelAndView.getModel() + " from " + modelAndView.getViewName();
             }
         });
 
-        get("/", (request, response) -> {
-            return "Hello Root!";
-        });
+        get("/", (request, response) -> "Hello Root!");
 
         post("/poster", (request, response) -> {
             String body = request.body();
@@ -114,9 +94,7 @@ public class GenericIntegrationTest {
             return "Body was: " + body;
         });
 
-        after("/hi", (request, response) -> {
-            response.header("after", "foobar");
-        });
+        after("/hi", (request, response) -> response.header("after", "foobar"));
 
         get("/throwexception", (request, response) -> {
             throw new UnsupportedOperationException();
@@ -130,13 +108,9 @@ public class GenericIntegrationTest {
             throw new NotFoundException();
         });
 
-        exception(UnsupportedOperationException.class, (exception, request, response) -> {
-            response.body("Exception handled");
-        });
+        exception(UnsupportedOperationException.class, (exception, request, response) -> response.body("Exception handled"));
 
-        exception(BaseException.class, (exception, request, response) -> {
-            response.body("Exception handled");
-        });
+        exception(BaseException.class, (exception, request, response) -> response.body("Exception handled"));
 
         exception(NotFoundException.class, (exception, request, response) -> {
             response.status(404);
@@ -146,6 +120,7 @@ public class GenericIntegrationTest {
         try {
             Thread.sleep(500);
         } catch (Exception e) {
+            // Do nothing
         }
     }
 
@@ -278,9 +253,7 @@ public class GenericIntegrationTest {
     }
 
     private static void registerEchoRoute(final String routePart) {
-        get("/tworoutes/" + routePart + "/:param", (request, response) -> {
-            return routePart + " route: " + request.params(":param");
-        });
+        get("/tworoutes/" + routePart + "/:param", (request, response) -> routePart + " route: " + request.params(":param"));
     }
 
     private static void assertEchoRoute(String routePart) throws Exception {
@@ -356,7 +329,7 @@ public class GenericIntegrationTest {
     public void testStaticFileFromSecondDirectory() throws Exception {
         UrlResponse response = testUtil.doMethod("GET", "/js/js.js", null);
         Assert.assertEquals(200, response.status);
-        Assert.assertEquals("Content of javascript file", response.body);
+        Assert.assertEquals("function foo() {}", response.body);
     }
 
     @Test

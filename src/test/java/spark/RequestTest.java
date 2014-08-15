@@ -39,7 +39,7 @@ public class RequestTest {
 
     @Test
     public void queryParamShouldReturnsParametersFromQueryString() {
-        Map<String,String[]> params = new HashMap<String,String[]>();
+        Map<String,String[]> params = new HashMap<>();
         params.put("name",new String[] {"Federico"});
         HttpServletRequest servletRequest = new MockedHttpServletRequest(params);
         Request request = new Request(match,servletRequest);
@@ -49,7 +49,7 @@ public class RequestTest {
     
     @Test
     public void queryParamShouldBeParsedAsHashMap() {
-        Map<String,String[]> params = new HashMap<String,String[]>();
+        Map<String,String[]> params = new HashMap<>();
         params.put("user[name]",new String[] {"Federico"});
         HttpServletRequest servletRequest = new MockedHttpServletRequest(params);
         Request request = new Request(match,servletRequest);
@@ -59,7 +59,7 @@ public class RequestTest {
 
     @Test
     public void shouldBeAbleToGetTheServletPath() {
-        HttpServletRequest servletRequest = new MockedHttpServletRequest(new HashMap<String, String[]>()) {
+        HttpServletRequest servletRequest = new MockedHttpServletRequest(new HashMap<>()) {
             @Override
             public String getServletPath() {
                 return THE_SERVLET_PATH;
@@ -71,7 +71,7 @@ public class RequestTest {
     
     @Test
     public void shouldBeAbleToGetTheContextPath() {
-        HttpServletRequest servletRequest = new MockedHttpServletRequest(new HashMap<String, String[]>()) {
+        HttpServletRequest servletRequest = new MockedHttpServletRequest(new HashMap<>()) {
             @Override
             public String getContextPath() {
                 return THE_CONTEXT_PATH;

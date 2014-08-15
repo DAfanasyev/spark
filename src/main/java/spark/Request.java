@@ -16,7 +16,7 @@
  */
 package spark;
 
-import spark.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import spark.utils.SparkUtils;
 
 import javax.servlet.http.Cookie;
@@ -268,7 +268,7 @@ public class Request {
      */
     public Set<String> headers() {
         if (headers == null) {
-            headers = new TreeSet<String>();
+            headers = new TreeSet<>();
             Enumeration<String> enumeration = servletRequest.getHeaderNames();
             while (enumeration.hasMoreElements()) {
                 headers.add(enumeration.nextElement());
@@ -309,8 +309,8 @@ public class Request {
      * @return all attributes
      */
     public Set<String> attributes() {
-        Set<String> attrList = new HashSet<String>();
-        Enumeration<String> attributes = (Enumeration<String>) servletRequest.getAttributeNames();
+        Set<String> attrList = new HashSet<>();
+        Enumeration<String> attributes = servletRequest.getAttributeNames();
         while (attributes.hasMoreElements()) {
             attrList.add(attributes.nextElement());
         }
@@ -383,7 +383,7 @@ public class Request {
      * @return request cookies (or empty Map if cookies dosn't present)
      */
     public Map<String, String> cookies() {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         Cookie[] cookies = servletRequest.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -428,7 +428,7 @@ public class Request {
     private static Map<String, String> getParams(List<String> request, List<String> matched) {
         LOG.debug("get params");
 
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
 
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);
@@ -451,7 +451,7 @@ public class Request {
 
         boolean sameLength = (nbrOfRequestParts == nbrOfMatchedParts);
 
-        List<String> splat = new ArrayList<String>();
+        List<String> splat = new ArrayList<>();
 
         for (int i = 0; (i < nbrOfRequestParts) && (i < nbrOfMatchedParts); i++) {
             String matchedPart = matched.get(i);

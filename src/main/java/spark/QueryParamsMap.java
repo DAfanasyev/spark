@@ -1,12 +1,12 @@
 package spark;
 
+import javax.servlet.http.HttpServletRequest;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * This objects represent the parameters sent on a Http Request. <br>
@@ -36,7 +36,7 @@ public class QueryParamsMap {
     /**
      * Holds the nested keys
      */
-    private Map<String, QueryParamsMap> queryMap = new HashMap<String, QueryParamsMap>();
+    private Map<String, QueryParamsMap> queryMap = new HashMap<>();
 
     /**
      * Value(s) for this key
@@ -130,7 +130,7 @@ public class QueryParamsMap {
         }
     }
 
-    protected static final String cleanKey(String group) {
+    protected static String cleanKey(String group) {
         if (group.startsWith("[")) {
             return group.substring(1, group.length() - 1);
         } else {
@@ -277,7 +277,7 @@ public class QueryParamsMap {
      * @return Map representation
      */
     public Map<String, String[]> toMap() {
-        Map<String, String[]> map = new HashMap<String, String[]>();
+        Map<String, String[]> map = new HashMap<>();
 
         for (Entry<String, QueryParamsMap> key : this.queryMap.entrySet()) {
             map.put(key.getKey(), key.getValue().values);

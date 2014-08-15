@@ -17,16 +17,13 @@
 package spark.examples.interceptor;
 
 import static spark.Spark.before;
-import static spark.Spark.*;
+import static spark.Spark.halt;
 
 
 public class InterceptorExampleWildcard {
 
     public static void main(String[] args) {
-        before("/protected/*", (request, response) -> {
-            // ... check if authenticated
-            halt(401, "Go Away!");
-        });
+        before("/protected/*", (request, response) -> halt(401, "Go Away!"));
     }
 
 }

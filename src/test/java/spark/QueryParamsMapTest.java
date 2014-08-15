@@ -1,14 +1,14 @@
 package spark;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class QueryParamsMapTest {
 
@@ -16,7 +16,7 @@ public class QueryParamsMapTest {
     
     @Test
     public void constructorWithParametersMap() {
-        Map<String,String[]> params = new HashMap<String,String[]>();
+        Map<String,String[]> params = new HashMap<>();
         
         params.put("user[info][name]",new String[] {"fede"});
         
@@ -102,7 +102,7 @@ public class QueryParamsMapTest {
     
     @Test
     public void testToMap() {
-        Map<String,String[]> params = new HashMap<String,String[]>();
+        Map<String,String[]> params = new HashMap<>();
         
         params.put("user[info][name]",new String[] {"fede"});
         params.put("user[info][last]",new String[] {"dayan"});

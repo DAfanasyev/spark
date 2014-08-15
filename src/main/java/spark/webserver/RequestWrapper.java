@@ -16,14 +16,14 @@
  */
 package spark.webserver;
 
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
 import spark.QueryParamsMap;
 import spark.Request;
 import spark.Session;
+
+import javax.servlet.http.HttpServletRequest;
+
+import java.util.Map;
+import java.util.Set;
 
 final class RequestWrapper extends Request {
 

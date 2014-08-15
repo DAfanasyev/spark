@@ -2,13 +2,12 @@ package spark;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.interceptor.InterceptorRegistration;
 import spark.interceptor.InterceptorRegistry;
 import spark.route.HttpMethod;
 import spark.route.RouteEntry;
-import spark.route.RouteRegistryFactory;
 import spark.route.RouteRegistry;
+import spark.route.RouteRegistryFactory;
 import spark.servlet.SparkFilter;
 import spark.webserver.SparkServer;
 import spark.webserver.SparkServerFactory;
@@ -34,8 +33,8 @@ public abstract class SparkBase {
     protected static String truststoreFile;
     protected static String truststorePassword;
 
-    protected static final Set<String> staticFileFolder = new HashSet<>();
-    protected static final Set<String> externalStaticFileFolder = new HashSet<>();
+    protected static final Set<String> staticFileFolders = new HashSet<>();
+    protected static final Set<String> externalStaticFileFolders = new HashSet<>();
 
     protected static SparkServer server;
 
@@ -184,7 +183,7 @@ public abstract class SparkBase {
         if (initialized && !runFromServlet) {
             throwBeforeRouteMappingException();
         }
-        staticFileFolder.add(folder);
+        staticFileFolders.add(folder);
         if (runFromServlet) {
             SparkFilter.configureStaticResources(folder);
         }
@@ -200,7 +199,7 @@ public abstract class SparkBase {
         if (initialized && !runFromServlet) {
             throwBeforeRouteMappingException();
         }
-        externalStaticFileFolder.add(externalFolder);
+        externalStaticFileFolders.add(externalFolder);
         if (runFromServlet) {
             SparkFilter.configureExternalStaticResources(externalFolder);
         }
@@ -212,9 +211,8 @@ public abstract class SparkBase {
     }
 
     private static boolean hasMultipleHandlers() {
-        return staticFileFolder != null || externalStaticFileFolder != null;
+        return !staticFileFolders.isEmpty() || !externalStaticFileFolders.isEmpty();
     }
-
 
     /**
      * Stops the Spark server and clears all routes
@@ -283,20 +281,17 @@ public abstract class SparkBase {
         if (!initialized) {
             routeRegistry = RouteRegistryFactory.get();
             interceptorRegistry = InterceptorRegistry.get();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    server = SparkServerFactory.create(hasMultipleHandlers());
-                    server.ignite(
-                            ipAddress,
-                            port,
-                            keystoreFile,
-                            keystorePassword,
-                            truststoreFile,
-                            truststorePassword,
-                            staticFileFolder,
-                            externalStaticFileFolder);
-                }
+            new Thread(() -> {
+                server = SparkServerFactory.create(hasMultipleHandlers());
+                server.ignite(
+                        ipAddress,
+                        port,
+                        keystoreFile,
+                        keystorePassword,
+                        truststoreFile,
+                        truststorePassword,
+                        staticFileFolders,
+                        externalStaticFileFolders);
             }).start();
             initialized = true;
         }

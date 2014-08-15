@@ -16,14 +16,15 @@
 
 package spark.resource;
 
+import spark.utils.ClassUtils;
+import spark.utils.StringUtils;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import spark.utils.Assert;
-import spark.utils.ClassUtils;
-import spark.utils.StringUtils;
+import static org.apache.commons.lang3.Validate.notNull;
 
 /**
  * {@link Resource} implementation for class path resources.
@@ -73,7 +74,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
      * @see ClassLoader#getResourceAsStream(String)
      */
     public ClassPathResource(String path, ClassLoader classLoader) {
-        Assert.notNull(path, "Path must not be null");
+        notNull(path, "Path must not be null");
         String pathToUse = StringUtils.cleanPath(path);
         if (pathToUse.startsWith("/")) {
             pathToUse = pathToUse.substring(1);

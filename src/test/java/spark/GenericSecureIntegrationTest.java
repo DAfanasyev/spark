@@ -1,7 +1,7 @@
 package spark;
 
-import org.junit.Assert;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -37,25 +37,15 @@ public class GenericSecureIntegrationTest {
         Spark.secure(SparkTestUtil.getKeyStoreLocation(),
                      SparkTestUtil.getKeystorePassword(), null, null);
 
-        before("/protected/*", (request, response) -> {
-            halt(401, "Go Away!");
-        });
+        before("/protected/*", (request, response) -> halt(401, "Go Away!"));
 
-        get("/hi", (request, response) -> {
-            return "Hello World!";
-        });
+        get("/hi", (request, response) -> "Hello World!");
 
-        get("/:param", (request, response) -> {
-            return "echo: " + request.params(":param");
-        });
+        get("/:param", (request, response) -> "echo: " + request.params(":param"));
 
-        get("/paramwithmaj/:paramWithMaj", (request, response) -> {
-            return "echo: " + request.params(":paramWithMaj");
-        });
+        get("/paramwithmaj/:paramWithMaj", (request, response) -> "echo: " + request.params(":paramWithMaj"));
 
-        get("/", (request, response) -> {
-            return "Hello Root!";
-        });
+        get("/", (request, response) -> "Hello Root!");
 
         post("/poster", (request, response) -> {
             String body = request.body();
@@ -69,9 +59,7 @@ public class GenericSecureIntegrationTest {
             return "Body was: " + body;
         });
 
-        after("/hi", (request, response) -> {
-            response.header("after", "foobar");
-        });
+        after("/hi", (request, response) -> response.header("after", "foobar"));
 
         try {
             Thread.sleep(500);

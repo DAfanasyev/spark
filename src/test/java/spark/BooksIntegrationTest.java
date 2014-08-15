@@ -1,10 +1,11 @@
 package spark;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static spark.Spark.after;
-import static spark.Spark.before;
+import org.apache.commons.io.IOUtils;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import spark.examples.books.Books;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,17 +16,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import spark.examples.books.Books;
-import spark.utils.IOUtils;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static spark.Spark.after;
+import static spark.Spark.before;
 
 public class BooksIntegrationTest {
-
-    private static int PORT = 4567;
 
     private static String AUTHOR = "FOO";
     private static String TITLE = "BAR";
@@ -45,15 +42,11 @@ public class BooksIntegrationTest {
 
     @BeforeClass
     public static void setup() {
-        before((request, response) -> {
-            response.header("FOZ", "BAZ");
-        });
+        before((request, response) -> response.header("FOZ", "BAZ"));
 
         Books.main(null);
 
-        after((request, response) -> {
-            response.header("FOO", "BAR");
-        });
+        after((request, response) -> response.header("FOO", "BAR"));
 
         try {
             Thread.sleep(500);
@@ -163,12 +156,12 @@ public class BooksIntegrationTest {
 
     private static void getResponse(String requestMethod, String path, UrlResponse response)
             throws MalformedURLException, IOException, ProtocolException {
-        URL url = new URL("http://localhost:" + PORT + path);
+        int port = 4567;
+        URL url = new URL("http://localhost:" + port + path);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(requestMethod);
         connection.connect();
-        String res = IOUtils.toString(connection.getInputStream());
-        response.body = res;
+        response.body = IOUtils.toString(connection.getInputStream());
         response.status = connection.getResponseCode();
         response.headers = connection.getHeaderFields();
     }

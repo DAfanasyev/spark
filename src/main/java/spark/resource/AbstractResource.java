@@ -16,6 +16,8 @@
 
 package spark.resource;
 
+import spark.utils.ResourceUtils;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,8 +26,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import spark.utils.Assert;
-import spark.utils.ResourceUtils;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Convenience base class for {@link Resource} implementations,
@@ -120,7 +121,7 @@ public abstract class AbstractResource implements Resource {
     @Override
     public long contentLength() throws IOException {
         InputStream is = this.getInputStream();
-        Assert.state(is != null, "resource input stream must not be null");
+        checkState(is != null, "resource input stream must not be null");
         try {
             long size = 0;
             byte[] buf = new byte[255];

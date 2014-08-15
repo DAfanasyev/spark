@@ -16,6 +16,7 @@
  */
 package spark.servlet;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Access;
@@ -27,7 +28,6 @@ import spark.resource.ClassPathResourceHandler;
 import spark.resource.ExternalResource;
 import spark.resource.ExternalResourceHandler;
 import spark.route.RouteRegistryFactory;
-import spark.utils.IOUtils;
 import spark.webserver.MatcherFilter;
 
 import javax.servlet.Filter;

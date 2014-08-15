@@ -16,9 +16,9 @@
  */
 package spark.webserver;
 
-import javax.servlet.http.HttpServletResponse;
-
 import spark.Response;
+
+import javax.servlet.http.HttpServletResponse;
 
 class ResponseWrapper extends Response {
 

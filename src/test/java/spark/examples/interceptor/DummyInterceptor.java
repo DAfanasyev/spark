@@ -28,13 +28,9 @@ public class DummyInterceptor {
     private static final Logger log = LoggerFactory.getLogger(DummyInterceptor.class);
 
     public static void main(String[] args) {
-        before((request, response) -> {
-            log.info("Before");
-        });
+        before((request, response) -> log.info("Before"));
 
-        after((request, response) -> {
-            log.info("After");
-        });
+        after((request, response) -> log.info("After"));
     }
 
 }

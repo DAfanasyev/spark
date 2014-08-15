@@ -1,11 +1,11 @@
 package spark.servlet;
 
-import org.junit.Assert;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -51,20 +51,17 @@ public class ServletTest {
 
         server.setHandler(bb);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    log.info(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
-                    server.start();
-                    System.in.read();
-                    log.info(">>> STOPPING EMBEDDED JETTY SERVER");
-                    server.stop();
-                    server.join();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.exit(100);
-                }
+        new Thread(() -> {
+            try {
+                log.info(">>> STARTING EMBEDDED JETTY SERVER for jUnit testing of SparkFilter");
+                server.start();
+                System.in.read();
+                log.info(">>> STOPPING EMBEDDED JETTY SERVER");
+                server.stop();
+                server.join();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.exit(100);
             }
         }).start();
 

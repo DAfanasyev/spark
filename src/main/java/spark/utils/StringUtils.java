@@ -15,9 +15,10 @@
  */
 package spark.utils;
 
+import com.google.common.base.Joiner;
+
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -219,7 +220,7 @@ public abstract class StringUtils {
         }
 
         String[] pathArray = delimitedListToStringArray(pathToUse, FOLDER_SEPARATOR);
-        List<String> pathElements = new LinkedList<String>();
+        List<String> pathElements = new LinkedList<>();
         int tops = 0;
 
         for (int i = pathArray.length - 1; i >= 0; i--) {
@@ -245,7 +246,7 @@ public abstract class StringUtils {
             pathElements.add(0, TOP_PATH);
         }
 
-        return prefix + collectionToDelimitedString(pathElements, FOLDER_SEPARATOR);
+        return prefix + Joiner.on(FOLDER_SEPARATOR).join(pathElements);
     }
 
     /**
@@ -298,7 +299,7 @@ public abstract class StringUtils {
         if (delimiter == null) {
             return new String[] {str};
         }
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         if ("".equals(delimiter)) {
             for (int i = 0; i < str.length(); i++) {
                 result.add(deleteAny(str.substring(i, i + 1), charsToDelete));
@@ -316,43 +317,6 @@ public abstract class StringUtils {
             }
         }
         return toStringArray(result);
-    }
-
-    /**
-     * Convenience method to return a Collection as a delimited (e.g. CSV)
-     * String. E.g. useful for {@code toString()} implementations.
-     *
-     * @param coll   the Collection to display
-     * @param delim  the delimiter to use (probably a ",")
-     * @param prefix the String to start each element with
-     * @param suffix the String to end each element with
-     * @return the delimited String
-     */
-    public static String collectionToDelimitedString(Collection<?> coll, String delim, String prefix, String suffix) {
-        if (CollectionUtils.isEmpty(coll)) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        Iterator<?> it = coll.iterator();
-        while (it.hasNext()) {
-            sb.append(prefix).append(it.next()).append(suffix);
-            if (it.hasNext()) {
-                sb.append(delim);
-            }
-        }
-        return sb.toString();
-    }
-
-    /**
-     * Convenience method to return a Collection as a delimited (e.g. CSV)
-     * String. E.g. useful for {@code toString()} implementations.
-     *
-     * @param coll  the Collection to display
-     * @param delim the delimiter to use (probably a ",")
-     * @return the delimited String
-     */
-    public static String collectionToDelimitedString(Collection<?> coll, String delim) {
-        return collectionToDelimitedString(coll, delim, "", "");
     }
 
 }

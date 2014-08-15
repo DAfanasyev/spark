@@ -1,1 +1,1 @@
-Content of javascript file
+function foo() {}

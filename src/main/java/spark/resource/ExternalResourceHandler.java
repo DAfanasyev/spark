@@ -17,13 +17,13 @@
 //
 package spark.resource;
 
-import java.net.MalformedURLException;
-
 import org.eclipse.jetty.util.URIUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import spark.utils.Assert;
+import java.net.MalformedURLException;
+
+import static org.apache.commons.lang3.Validate.notNull;
 
 /**
  * Locates resources from external folder
@@ -51,7 +51,7 @@ public class ExternalResourceHandler extends AbstractResourceHandler {
      * @param welcomeFile  the welcomeFile
      */
     public ExternalResourceHandler(String baseResource, String welcomeFile) {
-        Assert.notNull(baseResource);
+        notNull(baseResource);
         this.baseResource = baseResource;
         this.welcomeFile = welcomeFile;
     }

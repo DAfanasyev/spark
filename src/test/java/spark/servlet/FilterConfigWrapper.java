@@ -1,9 +1,9 @@
 package spark.servlet;
 
-import java.util.Enumeration;
-
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletContext;
+
+import java.util.Enumeration;
 
 
 public class FilterConfigWrapper implements FilterConfig {

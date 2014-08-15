@@ -17,12 +17,12 @@
 //
 package spark.resource;
 
-import java.net.MalformedURLException;
+import org.eclipse.jetty.util.URIUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.jetty.util.URIUtil;
+import java.net.MalformedURLException;
 
 /**
  * Abstract class providing functionality for finding resources based on an Http Servlet request.

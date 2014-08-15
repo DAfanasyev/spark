@@ -1,9 +1,9 @@
 package spark.examples.templateview;
 
+import spark.ModelAndView;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import spark.ModelAndView;
 
 import static spark.Spark.get;
 

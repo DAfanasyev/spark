@@ -53,7 +53,7 @@ public class JettyLogger implements Logger {
 
     @Override
     public void debug(String msg, Object... args) {
-        StringBuffer log = new StringBuffer(msg);
+        StringBuilder log = new StringBuilder(msg);
         for (Object arg : args) {
             log.append(", ");
             log.append(arg);
@@ -78,7 +78,7 @@ public class JettyLogger implements Logger {
 
     @Override
     public void info(String msg, Object... args) {
-        StringBuffer log = new StringBuffer(msg);
+        StringBuilder log = new StringBuilder(msg);
         for (Object arg : args) {
             log.append(", ");
             log.append(arg);
@@ -103,7 +103,7 @@ public class JettyLogger implements Logger {
 
     @Override
     public void warn(String msg, Object... args) {
-        StringBuffer log = new StringBuffer(msg);
+        StringBuilder log = new StringBuilder(msg);
         for (Object arg : args) {
             log.append(", ");
             log.append(arg);

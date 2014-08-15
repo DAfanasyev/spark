@@ -30,9 +30,9 @@ public class MimeParse {
 
         @Override
         public String toString() {
-            StringBuffer s = new StringBuffer("('" + type + "', '" + subType + "', {");
+            StringBuilder s = new StringBuilder("('" + type + "', '" + subType + "', {");
             for (String k : params.keySet()) {
-                s.append("'" + k + "':'" + params.get(k) + "',");
+                s.append("'").append(k).append("':'").append(params.get(k)).append("',");
             }
             return s.append("})").toString();
         }
@@ -163,8 +163,8 @@ public class MimeParse {
      * @return the best match
      */
     public static String mimeBestMatch(Collection<String> supported, String header) {
-        List<ParseResults> parseResults = new LinkedList<ParseResults>();
-        List<FitnessAndQuality> weightedMatches = new LinkedList<FitnessAndQuality>();
+        List<ParseResults> parseResults = new LinkedList<>();
+        List<FitnessAndQuality> weightedMatches = new LinkedList<>();
         for (String r : header.split(",")) {
             parseResults.add(parseMediaRange(r));
         }
