@@ -29,6 +29,9 @@ public class StaticResources {
         // Will serve all static file are under "/public" in classpath if the route isn't consumed by others routes.
         staticFileLocation("/public");
 
+        // Will serve all static files from "/client" directory in classpath if the route is not consumed by other routes.
+        staticFileLocation("/client");
+
         get("/hello", (request, response) -> {
             return "Hello World!";
         });
