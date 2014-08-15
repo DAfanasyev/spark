@@ -7,7 +7,7 @@ public class InterceptorMatch extends Match {
     public final Interceptor interceptor;
 
     public InterceptorMatch(HttpMethod httpMethod, String acceptType, String matchedUri, String requestUri, Interceptor interceptor) {
-        super(httpMethod, acceptType, matchedUri, requestUri);
+        super(matchedUri, requestUri);
         this.interceptor = interceptor;
     }
 }

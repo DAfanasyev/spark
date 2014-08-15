@@ -62,11 +62,7 @@ public class SparkTestUtil {
 		return doMethod(requestMethod, path, body, false, "text/html");
 	}
 
-	public UrlResponse doMethodSecure(String requestMethod, String path, String body, String acceptType) throws Exception {
-		return doMethod(requestMethod, path, body, true, acceptType);
-	}
-
-	public UrlResponse doMethod(String requestMethod, String path, String body, String acceptType) throws Exception {
+    public UrlResponse doMethod(String requestMethod, String path, String body, String acceptType) throws Exception {
 		return doMethod(requestMethod, path, body, false, acceptType);
 	}
 

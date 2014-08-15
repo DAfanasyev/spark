@@ -16,21 +16,15 @@
  */
 package spark;
 
-import spark.route.HttpMethod;
-
 /**
  * @author Per Wendel
  */
 public abstract class Match {
-    public final HttpMethod httpMethod;
-    public final String acceptType;
     public final String matchedUri;
     public final String requestUri;
 
-    public Match(HttpMethod httpMethod, String acceptType, String matchedUri, String requestUri) {
-        this.httpMethod = httpMethod;
+    public Match(String matchedUri, String requestUri) {
         this.matchedUri = matchedUri;
         this.requestUri = requestUri;
-        this.acceptType = acceptType;
     }
 }

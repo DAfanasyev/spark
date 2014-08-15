@@ -8,4 +8,12 @@ public class TransformerExample {
         get("/hello", "application/json", (request, response) -> new MyMessage("Hello World"), new JsonTransformer());
     }
 
+    public static class MyMessage {
+        public String message;
+
+        public MyMessage(String message) {
+            this.message = message;
+        }
+    }
+
 }

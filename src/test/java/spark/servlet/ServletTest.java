@@ -21,10 +21,10 @@ public class ServletTest {
     private static final Logger log = LoggerFactory.getLogger(ServletTest.class);
 
     private static final String SOMEPATH = "/somepath";
-    private static final int PORT = 9393;
-    static final Server server = new Server();
 
-    static SparkTestUtil testUtil;
+    private static final int PORT = 9393;
+
+    private static SparkTestUtil testUtil;
 
     @AfterClass
     public static void tearDown() {

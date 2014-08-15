@@ -25,20 +25,8 @@ package spark;
  * @author Per Wendel
  */
 public abstract class RouteImpl {
-
-    private static final String DEFAULT_ACCEPT_TYPE = "*/*";
-
     private String path;
     private String acceptType;
-
-    /**
-     * Constructor
-     *
-     * @param path The route path which is used for matching. (e.g. /hello, users/:name)
-     */
-    protected RouteImpl(String path) {
-        this(path, DEFAULT_ACCEPT_TYPE);
-    }
 
     /**
      * Constructor

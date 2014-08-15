@@ -23,6 +23,7 @@ import org.eclipse.jetty.util.log.Logger;
  *
  * @author Per Wendel
  */
+@SuppressWarnings("UnusedDeclaration")
 public class JettyLogger implements Logger {
 
     private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());

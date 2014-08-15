@@ -1,7 +1,5 @@
 package spark;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import spark.interceptor.InterceptorRegistration;
 import spark.interceptor.InterceptorRegistry;
 import spark.route.HttpMethod;
@@ -19,7 +17,6 @@ import java.util.Set;
  * Spark base class
  */
 public abstract class SparkBase {
-    private static final Logger LOG = LoggerFactory.getLogger("spark.Spark");
     public static final int SPARK_DEFAULT_PORT = 4567;
     protected static final String DEFAULT_ACCEPT_TYPE = "*/*";
 
@@ -42,9 +39,6 @@ public abstract class SparkBase {
     protected static InterceptorRegistry interceptorRegistry;
 
     private static boolean runFromServlet;
-
-    private static boolean servletStaticLocationSet;
-    private static boolean servletExternalStaticLocationSet;
 
     /**
      * Set the IP address that Spark should listen on. If not called the default

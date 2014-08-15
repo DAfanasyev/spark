@@ -53,33 +53,6 @@ public abstract class StringUtils {
     //---------------------------------------------------------------------
 
     /**
-     * Check whether the given String is empty.
-     * <p>This method accepts any Object as an argument, comparing it to
-     * {@code null} and the empty String. As a consequence, this method
-     * will never return {@code true} for a non-null non-String object.
-     * <p>The Object signature is useful for general attribute handling code
-     * that commonly deals with Strings but generally has to iterate over
-     * Objects since attributes may e.g. be primitive value objects as well.
-     *
-     * @param str the candidate String
-     * @return if the String is empty
-     * @since 3.2.1
-     */
-    public static boolean isEmpty(Object str) {
-        return (str == null || "".equals(str));
-    }
-
-    /**
-     * Checks if the given String is not empty
-     *
-     * @param str the candidate String
-     * @return if the String is not empty
-     */
-    public static boolean isNotEmpty(String str) {
-        return !isEmpty(str);
-    }
-
-    /**
      * Check that the given CharSequence is neither {@code null} nor of length 0.
      *
      * @param str the CharSequence to check (may be {@code null})

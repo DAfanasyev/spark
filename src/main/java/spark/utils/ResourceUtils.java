@@ -75,11 +75,6 @@ public abstract class ResourceUtils {
     public static final String URL_PROTOCOL_ZIP = "zip";
 
     /**
-     * URL protocol for an entry from a JBoss jar file: "vfszip"
-     */
-    public static final String URL_PROTOCOL_VFSZIP = "vfszip";
-
-    /**
      * URL protocol for an entry from a WebSphere jar file: "wsjar"
      */
     public static final String URL_PROTOCOL_WSJAR = "wsjar";
